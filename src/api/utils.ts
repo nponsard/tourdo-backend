@@ -1,4 +1,4 @@
-import { Context, RouterContext } from "https://deno.land/x/oak/mod.ts";
+import { Context } from "https://deno.land/x/oak@v10.1.0/mod.ts";
 /**
  * Sends a JSON-formatted response to a request.
  *
@@ -19,5 +19,13 @@ export const SendJSONResponse = <T>(
   }
 };
 
-
 export const Prefix = "/api/v1";
+
+export function ParseBodyJSON<T>(
+  ctx: Context<Record<string, unknown>>
+): Promise<T> {
+  return ctx.request.body({ type: "json" }).value.catch((err) => {
+    console.log("err :", err);
+    SendJSONResponse(ctx, { message: "Invalid JSON/body" }, 400);
+  });
+}
