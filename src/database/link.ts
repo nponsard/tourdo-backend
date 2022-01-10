@@ -1,4 +1,4 @@
-import { Database } from "https://deno.land/x/denodb/mod.ts";
+import { Database } from "https://deno.land/x/denodb@v1.0.40/mod.ts";
 import { User } from "./entities/user.ts";
 const entities = [User];
 

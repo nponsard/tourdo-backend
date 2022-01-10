@@ -2,9 +2,10 @@ import {
   DataTypes,
   Model,
   Relationships,
-} from "https://deno.land/x/denodb/mod.ts";
+} from "https://deno.land/x/denodb@v1.0.40/mod.ts";
 
 import { User } from "./user.ts";
+
 export class Token extends Model {
   static table = "token";
 
