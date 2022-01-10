@@ -4,9 +4,10 @@ import RegisterRoutes from "./routes.ts";
 export default async function Start() {
   const app = new Application();
 
-  app.use((ctx) => {
-    ctx.response.body = "Hello world!";
-  });
+  app.use(async (ctx, next) => {
+    console.log(ctx)
+    await next();
+  })
 
   RegisterRoutes(app);
 
