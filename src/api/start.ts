@@ -8,7 +8,7 @@ export default async function Start() {
     ctx.response.body = "Hello world!";
   });
 
-  app.use(RegisterRoutes().routes());
+  RegisterRoutes(app);
 
   await app.listen({ port: 3000 });
 }

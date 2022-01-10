@@ -1,6 +1,9 @@
-import { Router } from "https://deno.land/x/oak/mod.ts";
-export default function RegisterRoutes() {
-  const router = new Router();
+import { Application } from "https://deno.land/x/oak/mod.ts";
+import { User } from "./routes/user.ts";
+const routers = [User];
 
-  return router;
+export default function RegisterRoutes(app: Application<Record<string, any>>) {
+  for (const router of routers) {
+    app.use(router.routes());
+  }
 }
