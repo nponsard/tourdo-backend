@@ -7,7 +7,11 @@ import {
     GetUserAuth,
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
-import * as jose from "https://deno.land/x/jose@v4.3.8/index.ts";
+
+import { EncryptToken, DecryptJWT } from "../../jwt/mod.ts";
+import { crypto as Dcrypto } from "https://deno.land/std@0.120.0/crypto/mod.ts";
+import { CreateToken } from "../../database/entities/token.ts";
+
 const router = new Router({ prefix: `${Prefix}/user` });
 
 router.post("/register", async (ctx) => {
@@ -42,6 +46,8 @@ router.post("/login", async (ctx) => {
 
     const user = await GetUserAuth(ctx.app.state.pool, body.username);
 
+    console.log(user);
+
     if (!user || !(await bcrypt.compare(body.password, user.password))) {
         SendJSONResponse(ctx, { message: "Wrong username/Password" }, 401);
         return;
@@ -53,13 +59,20 @@ router.post("/login", async (ctx) => {
 
     // generate jwt
 
-    
-
-
+    const jwt = await EncryptToken(user.id.toString(), token);
 
     // store jwt hash in database
 
+    CreateToken(
+        ctx.app.state.pool,
+        new TextDecoder().decode(
+            await crypto.subtle.digest("SHA-512", new TextEncoder().encode(jwt))
+        ),
+        user.id
+    );
+
     // return jwt
+    SendJSONResponse(ctx, { jwt });
 });
 
 router.get("/", (ctx) => {

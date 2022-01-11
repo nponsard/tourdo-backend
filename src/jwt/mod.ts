@@ -1,20 +1,26 @@
-import {
-    EncryptJWT,
-    jwtDecrypt,
-} from "https://deno.land/x/jose@v4.3.8/index.ts";
+import { create, verify } from "https://deno.land/x/djwt@v2.2/mod.ts";
 
-const secret = Deno.env.get("ENCRYPTION_KEY") || "secret";
+const defaultKey = `secret`;
 
-if (secret == "secret") {
+const secret = Deno.env.get("ENCRYPTION_KEY") || defaultKey;
+
+if (secret === defaultKey) {
     console.error("ENCRYPTION_KEY is unsecure and should be changed");
 }
+export function EncryptToken(id: string,token:string) {
+    return create(
+        {
+            alg: "HS512",
+            typ: "JWT",
+        },
+        {
+            id,
+            token,
+        },
+        secret
+    );
+}
 
-const encryptionKey = new TextEncoder().encode(secret);
-
-export function EncryptToken(id: string) {
-    return new EncryptJWT({ userId: id })
-        .setProtectedHeader({ alg: "dir", typ: "JWT", enc: "A256GCM" })
-        .setIssuedAt()
-        .setExpirationTime("30d")
-        .encrypt(encryptionKey);
+export function DecryptJWT(token: string) {
+    return verify(token, secret, "HS512");
 }
