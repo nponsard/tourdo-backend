@@ -4,10 +4,15 @@ import Init from "./database/init.ts";
 
 const INIT_DB = Deno.env.get("INIT_DB") || "true";
 
-const pool = await ConnectDefaults();
+const pool = ConnectDefaults();
+
+// test connection
+
+const client = await pool.connect();
+client.release();
 
 if (INIT_DB === "true") {
     await Init(pool);
 }
 
-await Start();
+await Start(pool);

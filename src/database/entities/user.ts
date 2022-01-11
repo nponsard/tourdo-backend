@@ -12,7 +12,22 @@ export interface User {
     username: string;
 }
 
-export async function GetUser(db: Pool, id: number): Promise<User> {
+export async function GetUserByUsername(
+    db: Pool,
+    username: string
+): Promise<User | undefined> {
+    const client = await db.connect();
+
+    const result = await client.queryObject<User>(
+        "SELECT * FROM users WHERE username = $1",
+        [username]
+    );
+
+    client.release();
+    return result.rows[0];
+}
+
+export async function GetUser(db: Pool, id: number): Promise<User | undefined> {
     const client = await db.connect();
 
     const result = await client.queryObject<User>(
@@ -21,14 +36,18 @@ export async function GetUser(db: Pool, id: number): Promise<User> {
     );
 
     client.release();
-    return result.rows[0] as User;
+    return result.rows[0];
 }
 
-export async function CreateUser(db: Pool, userAuth: UserAuth): Promise<User> {
+export async function CreateUser(
+    db: Pool,
+    username: string,
+    password: string
+): Promise<User> {
     const client = await db.connect();
     const result = await client.queryObject<User>(
         "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id,username",
-        [userAuth.username, userAuth.password]
+        [username, password]
     );
 
     client.release();
@@ -58,7 +77,7 @@ export async function CheckCredentials(
     return userAuth.password === password;
 }
 
-export async function GetParticipationInTeams(db: Pool, userID : number) {
+export async function GetParticipationInTeams(db: Pool, userID: number) {
     const client = await db.connect();
 
     const result = await client.queryObject<Team>(

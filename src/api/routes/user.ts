@@ -4,43 +4,67 @@ import { SendJSONResponse } from "../utils.ts";
 
 import { Prefix } from "../utils.ts";
 
-const router = new Router({ prefix: `${Prefix}/user` });
+import { CreateUser, GetUserByUsername } from "../../database/entities/user.ts";
+import { Pool } from "https://deno.land/x/postgres@v0.14.3/pool.ts";
+
+const router = new Router<{ pool: Pool }>({ prefix: `${Prefix}/user` });
 
 router.post("/register", (ctx) => {
-  console.log(ctx.request.hasBody);
-  return ctx.request
-    .body({ type: "json" })
-    .value.then((val) => {
-      console.log(val);
-      if (val.username) {
-        ctx.response.body = {
-          message: "success",
-        };
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      SendJSONResponse(ctx, { message: "Bad request" }, 400);
-    });
+    console.log(ctx.request.hasBody);
+    return ctx.request
+        .body({ type: "json" })
+        .value.then((val: { password: string; username: string }) => {
+            GetUserByUsername(ctx.state.pool, val.username)
+                .then((user) => {
+                    if (user) {
+                        SendJSONResponse(
+                            ctx,
+                            { message: "User already exists" },
+                            400
+                        );
+                    } else {
+                        CreateUser(
+                            ctx.state.pool,
+                            val.username,
+                            val.password
+                        ).then((user) => {
+                            SendJSONResponse(ctx, user);
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+
+            if (val.username) {
+                ctx.response.body = {
+                    message: "success",
+                };
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            SendJSONResponse(ctx, { message: "Bad request" }, 400);
+        });
 });
 
 router.post("/login", (ctx) => {
-  console.log(ctx.request.body().value);
-  console.log(ctx);
+    console.log(ctx.request.body().value);
+    console.log(ctx);
 
-  // check login
+    // check login
 
-  // generate token
+    // generate token
 
-  // generate jwt
+    // generate jwt
 
-  // store jwt hash in database
+    // store jwt hash in database
 
-  // return jwt
+    // return jwt
 });
 
 router.get("/", (ctx) => {
-  ctx.response.body = "Hello World";
+    ctx.response.body = "Hello World";
 });
 
 export { router as User };
