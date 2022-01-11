@@ -1,16 +1,58 @@
-import { DataTypes, Model } from "https://deno.land/x/denodb@v1.0.40/mod.ts";
-import { Token } from "./token.ts";
+import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
-export class User extends Model {
-  static table = "user";
+export interface UserAuth {
+    id: number;
+    username: string;
+    password: string;
+}
 
-  static fields = {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    username: { type: DataTypes.STRING, allowNull: false, length: 50 },
-    password: DataTypes.STRING,
-  };
+export interface User {
+    id: number;
+    username: string;
+}
 
-  static tokens() {
-    return this.hasMany(Token);
-  }
+export async function GetUser(db: Pool, id: number): Promise<User> {
+    const client = await db.connect();
+
+    const result = await client.queryObject<User>(
+        "SELECT id,username FROM users WHERE id = $1",
+        [id]
+    );
+
+    client.release();
+    return result.rows[0] as User;
+}
+
+export async function CreateUser(db: Pool, userAuth: UserAuth): Promise<User> {
+    const client = await db.connect();
+    const result = await client.queryObject<User>(
+        "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id,username",
+        [userAuth.username, userAuth.password]
+    );
+
+    client.release();
+
+    return result.rows[0];
+}
+
+export async function CheckCredentials(
+    db: Pool,
+    username: string,
+    password: string
+): Promise<boolean> {
+    const client = await db.connect();
+    const result = await client.queryObject<UserAuth>(
+        "SELECT id,username,password FROM users WHERE username = $1 AND password = $2",
+        [username, password]
+    );
+
+    client.release();
+
+    if (result.rows.length === 0) {
+        return false;
+    }
+
+    const userAuth = result.rows[0];
+
+    return userAuth.password === password;
 }

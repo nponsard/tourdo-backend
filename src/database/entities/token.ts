@@ -1,23 +1,18 @@
-import {
-  DataTypes,
-  Model,
-  Relationships,
-} from "https://deno.land/x/denodb@v1.0.40/mod.ts";
+import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
-import { User } from "./user.ts";
-
-export class Token extends Model {
-  static table = "token";
-
-  static fields = {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    userID: { type: DataTypes.INTEGER, allowNull: false },
-    accessHash: DataTypes.STRING,
-  };
-
-  static user() {
-    return this.hasOne(User);
-  }
+export interface Token {
+    accessHash: string;
+    userId: number;
 }
 
-Relationships.belongsTo(Token, User);
+export async function GetToken(db: Pool, accessHash: string): Promise<Token> {
+    const client = await db.connect();
+
+    const result = await client.queryObject<Token>(
+        "SELECT access_hash,user_id FROM tokens WHERE access_hash = $1",
+        [accessHash]
+    );
+
+    client.release();
+    return result.rows[0];
+}

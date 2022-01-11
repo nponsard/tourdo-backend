@@ -7,7 +7,7 @@ const INIT_DB = Deno.env.get("INIT_DB") || "true";
 const pool = await ConnectDefaults();
 
 if (INIT_DB === "true") {
-  await Init(pool);
+    await Init(pool);
 }
 
 await Start();
