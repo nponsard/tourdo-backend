@@ -57,26 +57,19 @@ export async function CreateUser(
     return result.rows[0];
 }
 
-export async function CheckCredentials(
+export async function GetUserAuth(
     db: Pool,
-    username: string,
-    password: string
-): Promise<boolean> {
+    username: string
+): Promise<UserAuth> {
     const client = await db.connect();
     const result = await client.queryObject<UserAuth>(
-        "SELECT id,username,password FROM users WHERE username = $1 AND password = $2",
-        username, password
+        "SELECT id,username,password FROM users WHERE username = $1 ",
+        username
     );
 
     client.release();
 
-    if (result.rows.length === 0) {
-        return false;
-    }
-
-    const userAuth = result.rows[0];
-
-    return userAuth.password === password;
+    return result.rows[0];
 }
 
 export async function GetParticipationInTeams(db: Pool, userID: number) {

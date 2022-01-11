@@ -1,29 +1,19 @@
 import { Router } from "https://deno.land/x/oak@v10.1.0/mod.ts";
-
-import { SendJSONResponse } from "../utils.ts";
-
+import { SendJSONResponse, ParseBodyJSON } from "../utils.ts";
 import { Prefix } from "../utils.ts";
-
-import { CreateUser, GetUserByUsername } from "../../database/entities/user.ts";
-import { Pool } from "https://deno.land/x/postgres@v0.14.3/pool.ts";
-import { ApplicationState } from "../utils.ts";
-
+import {
+    CreateUser,
+    GetUserByUsername,
+    GetUserAuth,
+} from "../../database/entities/user.ts";
+import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
+import * as jose from "https://deno.land/x/jose@v4.3.8/index.ts";
 const router = new Router({ prefix: `${Prefix}/user` });
 
 router.post("/register", async (ctx) => {
-    let body;
-    console.log(ctx.app.state.pool);
-
-    try {
-        body = await ctx.request.body({ type: "json" }).value;
-        if (!body || !body.username || !body.password) {
-            throw new Error("Invalid JSON/body");
-        }
-    } catch (err) {
-        console.log("err :", err);
-        SendJSONResponse(ctx, { message: "Invalid JSON/body" }, 400);
-        return;
-    }
+    const body = await ParseBodyJSON<{ password: string; username: string }>(
+        ctx
+    );
 
     try {
         const used = await GetUserByUsername(ctx.app.state.pool, body.username);
@@ -34,7 +24,7 @@ router.post("/register", async (ctx) => {
         const user = await CreateUser(
             ctx.app.state.pool,
             body.username,
-            body.password
+            await bcrypt.hash(body.password)
         );
         SendJSONResponse(ctx, user);
     } catch (err) {
@@ -43,15 +33,29 @@ router.post("/register", async (ctx) => {
     }
 });
 
-router.post("/login", (ctx) => {
-    console.log(ctx.request.body().value);
-    console.log(ctx);
+router.post("/login", async (ctx) => {
+    const body = await ParseBodyJSON<{ password: string; username: string }>(
+        ctx
+    );
 
     // check login
 
+    const user = await GetUserAuth(ctx.app.state.pool, body.username);
+
+    if (!user || !(await bcrypt.compare(body.password, user.password))) {
+        SendJSONResponse(ctx, { message: "Wrong username/Password" }, 401);
+        return;
+    }
+
     // generate token
 
+    const token = crypto.randomUUID();
+
     // generate jwt
+
+    
+
+
 
     // store jwt hash in database
 
