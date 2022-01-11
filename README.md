@@ -53,7 +53,7 @@ Where Column is the id of the first oponent and Row is the id of the second oppo
 [ ] MATCHES(**ID**, #TEAM1_UID, #TEAM2_UID, ROW, COLUMN, #TOURNAMENT_UID, #DATE )  
 [ ] TOURNAMENT_PARTICIPANT(#**TEAM_ID**, #**TOURNAMENT_ID**, TEAM_NUMBER)  
 [x] USERS(**ID**, FIRSTNAME, LASTNAME, PASSWORD )  
-[ ] TEAM_COMPOSITION(#**USER_ID**, #**TEAM_ID**, ROLE)
+[x] TEAM_COMPOSITION(#**USER_ID**, #**TEAM_ID**, ROLE)
 [x] TEAMS(**ID**, NAME, DESCRIPTION, MATCH_COUNT, WIN_COUNT)  
 [x] TOKENS(**ACCESSHASH**, #USER_ID)
 
