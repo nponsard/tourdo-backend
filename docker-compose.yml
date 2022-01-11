@@ -13,7 +13,7 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=example
       - DB_DATABASE=postgres
-
+      - PRIVATE_KEY=-----BEGIN PRIVATE KEY-----MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgwKvD1+7xWsHjx8693vTi8YQdWQvqK6LN+Wui9A25uXKhRANCAAS8grYzZ7l1NwYZU/sU4LF+qcYQH3QDG2M5coMCSl7lx9NILb5+ZI7leFJmX2/Ncr/8rOq1Cal7cJUT4EBGV8K7-----END PRIVATE KEY-----
   db:
     image: postgres
     restart: always
