@@ -1,14 +1,14 @@
-create table "user"
+create table "users"
 (
     id       serial
         constraint user_pk
             primary key,
     username varchar(50) not null,
-    password text,
+    password text
 );
 
 create unique index user_id_uindex
-    on "user" (id);
+    on "users" (id);
 
 create unique index user_username_uindex
-    on "user" (username);
+    on "users" (username);
