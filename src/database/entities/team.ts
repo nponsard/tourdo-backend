@@ -1,5 +1,12 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 import { User } from "./user.ts";
+
+enum Role {
+    PLAYER = 0,
+    LEADER = 1,
+    COACH = 2,
+}
+
 export interface Team {
     id: number;
     name: string;
@@ -49,4 +56,20 @@ export async function GetTeamMembers(
 
     client.release();
     return result.rows;
+}
+
+
+export async function AddTeamMember(
+    db: Pool,
+    teamId: number,
+    userId: number,
+    role: Role
+): Promise<void> {
+    const client = await db.connect();
+    await client.queryObject(
+        "INSERT INTO teams_composition (team_id, user_id, role) VALUES ($1, $2, $3)",
+        [teamId, userId, role]
+    );
+
+    client.release();
 }

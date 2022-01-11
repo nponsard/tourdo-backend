@@ -1,10 +1,24 @@
 # woa-back-deno
 
-Backend
+Backend for woa tournament app
+
+## Deployment
+
+Needs to be linked to a postgreSQL database.
+
+### Environment variables
+- INIT_DB : initialize the database at start
+- DATABASE_URL : url of the postgresql database, used before the next variables 
+- DB_HOST : hostname / ip of the DB 
+- DB_PORT : port of the DB
+- DB_USERNAME : username to connect to the DB
+- DB_PASSWORD : password to connect to the DB
+- DB_DATABASE : name of the database to use
 
 ## technologies
 
-- Deno : pleasant api, native typescript support, - less libraries compared to node.js
+- Deno : pleasant api, native typescript support, - less libraries compared to
+  node.js
 - Typescript : easier dev, type definition to write
 - Oak : easy routing
 -
@@ -23,21 +37,20 @@ Backend
 3----\           /
       (34)------/
 4----/
-
 ```
 
 Column, Row
 
-match 1 vs 2 :  
- column 1 row 1
-match w12 vs w34 :  
- column 2 row 1
+match 1 vs 2 :\
+column 1 row 1 match w12 vs w34 :\
+column 2 row 1
 
 ### Round Robin
 
 Column, Row
 
-Where Column is the id of the first oponent and Row is the id of the second opponent
+Where Column is the id of the first oponent and Row is the id of the second
+opponent
 
 ## User types
 
@@ -47,17 +60,19 @@ Where Column is the id of the first oponent and Row is the id of the second oppo
 
 ## Tables
 
-[x] EVENTS(**ID**, NAME, DESCRIPTION)  
-[x] EVENTS_ORGANIZERS(#**EVENT_ID**, #**USER_ID**)  
-[x] TOURNAMENTS(**ID**, TYPE, NAME, DATE_START, DATE_END, DESCRIPTION, #EVENT_ID)  
-[x] MATCHES(**ID**, #TEAM1_UID, #TEAM2_UID, ROW, COLUMN, #TOURNAMENT_UID, #DATE )  
-[x] TOURNAMENT_PARTICIPANT(#**TEAM_ID**, #**TOURNAMENT_ID**, TEAM_NUMBER)  
-[x] USERS(**ID**, FIRSTNAME, LASTNAME, PASSWORD )  
-[x] TEAMS_COMPOSITION(#**USER_ID**, #**TEAM_ID**, ROLE)
-[x] TEAMS(**ID**, NAME, DESCRIPTION, MATCH_COUNT, WIN_COUNT)  
+[x] EVENTS(**ID**, NAME, DESCRIPTION)\
+[x] EVENTS_ORGANIZERS(#**EVENT_ID**, #**USER_ID**)\
+[x] TOURNAMENTS(**ID**, TYPE, NAME, DATE_START, DATE_END, DESCRIPTION,
+#EVENT_ID)\
+[x] MATCHES(**ID**, #TEAM1_UID, #TEAM2_UID, ROW, COLUMN, #TOURNAMENT_UID, #DATE
+)\
+[x] TOURNAMENT_PARTICIPANT(#**TEAM_ID**, #**TOURNAMENT_ID**, TEAM_NUMBER)\
+[x] USERS(**ID**, FIRSTNAME, LASTNAME, PASSWORD )\
+[x] TEAMS_COMPOSITION(#**USER_ID**, #**TEAM_ID**, ROLE) [x] TEAMS(**ID**, NAME,
+DESCRIPTION, MATCH_COUNT, WIN_COUNT)\
 [x] TOKENS(**ACCESSHASH**, #USER_ID)
 
 ### procedures
 
-A user can’t be on 2 teams participating at the same Tournament / event
-A user can’t be player and organizer of a Tournament / event
+A user can’t be on 2 teams participating at the same Tournament / event A user
+can’t be player and organizer of a Tournament / event
