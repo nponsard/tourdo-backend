@@ -7,6 +7,13 @@ Backend for woa tournament app
 Needs to be linked to a postgreSQL database.
 
 ### Environment variables
+- PRIVATE_KEY : private key to be used to sign JWT, use this command to generate a new key : 
+    ```bash
+    openssl genpkey -algorithm EC \
+    -pkeyopt ec_paramgen_curve:P-256 \
+    -pkeyopt ec_param_enc:named_curve | \
+      openssl pkcs8 -topk8 -nocrypt
+    ```
 - INIT_DB : initialize the database at start
 - DATABASE_URL : url of the postgresql database, used before the next variables 
 - DB_HOST : hostname / ip of the DB 

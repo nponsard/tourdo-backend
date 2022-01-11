@@ -62,14 +62,14 @@ router.post("/login", async (ctx) => {
     const jwt = await EncryptToken(user.id.toString(), token);
 
     // store jwt hash in database
-
+/*
     CreateToken(
         ctx.app.state.pool,
         new TextDecoder().decode(
             await crypto.subtle.digest("SHA-512", new TextEncoder().encode(jwt))
         ),
         user.id
-    );
+    );*/
 
     // return jwt
     SendJSONResponse(ctx, { jwt });

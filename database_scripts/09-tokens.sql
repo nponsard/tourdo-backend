@@ -12,6 +12,3 @@ create table if not exists tokens
     refresh_token_expiration date not null
 );
 
-create unique index if not exists tokens_access_hash_uindex
-    on tokens (access_hash);
-
