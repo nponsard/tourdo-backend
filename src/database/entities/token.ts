@@ -16,3 +16,19 @@ export async function GetToken(db: Pool, accessHash: string): Promise<Token> {
     client.release();
     return result.rows[0];
 }
+
+export async function CreateToken(
+    db: Pool,
+    accessHash: string,
+    userId: number
+): Promise<Token> {
+    const client = await db.connect();
+    const result = await client.queryObject<Token>(
+        "INSERT INTO tokens (access_hash,user_id) VALUES ($1, $2) RETURNING *",
+        [accessHash, userId]
+    );
+
+    client.release();
+
+    return result.rows[0];
+}
