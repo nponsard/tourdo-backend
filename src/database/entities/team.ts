@@ -1,25 +1,37 @@
-import {
-  DataTypes,
-  Model,
-  Relationships,
-} from "https://deno.land/x/denodb@v1.0.40/mod.ts";
+import { Pool } from "https://deno.land/x/postgres/mod.ts";
 
-import { User } from "./user.ts";
-
-export class Team extends Model {
-  static table = "team";
-
-  static fields = {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    match_count: DataTypes.INTEGER,
-    win_count: DataTypes.INTEGER,
-  };
-
-  static players() {
-    return this.hasMany(User);
-  }
+export interface Team {
+  id: number;
+  name: string;
+  description: string;
+  match_count: number;
+  win_count: number;
 }
 
-Relationships.manyToMany(Team, User);
+export async function GetTeam(db: Pool, id: number): Promise<Team> {
+  const client = await db.connect();
+
+  const result = await client.queryObject<Team>(
+    "SELECT * FROM teams WHERE id = $1",
+    [id]
+  );
+
+  client.release();
+  return result.rows[0] as Team;
+}
+
+export async function CreateTeam(
+  db: Pool,
+  name: string,
+  description: string
+): Promise<Team> {
+  const client = await db.connect();
+  const result = await client.queryObject<Team>(
+    "INSERT INTO teams (name, description) VALUES ($1, $2) RETURNING *",
+    [name, description]
+  );
+
+  client.release();
+
+  return result.rows[0];
+}

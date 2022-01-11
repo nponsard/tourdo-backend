@@ -1,4 +1,4 @@
-import { Client } from "https://deno.land/x/postgres/mod.ts";
+import { Pool } from "https://deno.land/x/postgres/mod.ts";
 
 export default async function Connect(
   database: string,
@@ -7,13 +7,17 @@ export default async function Connect(
   password: string,
   port: number
 ) {
-  const client = new Client({
-    database,
-    hostname,
-    user,
-    password,
-    port,
-  });
+  const client = new Pool(
+    {
+      database,
+      hostname,
+      user,
+      password,
+      port,
+    },
+    40,
+    true
+  );
   await client.connect();
 
   return client;
