@@ -1,4 +1,5 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
+import { Team } from "./team.ts";
 
 export interface UserAuth {
     id: number;
@@ -55,4 +56,16 @@ export async function CheckCredentials(
     const userAuth = result.rows[0];
 
     return userAuth.password === password;
+}
+
+export async function GetParticipatioInTeams(db: Pool, userID : number) {
+    const client = await db.connect();
+
+    const result = await client.queryObject<Team>(
+        "SELECT * FROM teams WHERE id IN (SELECT team_id FROM teams_composition WHERE user_id = $1)",
+        [userID]
+    );
+
+    client.release();
+    return result.rows;
 }
