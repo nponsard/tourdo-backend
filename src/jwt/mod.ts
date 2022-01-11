@@ -2,6 +2,7 @@ import {
     SignJWT,
     jwtVerify,
     importPKCS8,
+    
 } from "https://deno.land/x/jose@v4.3.8/index.ts";
 const defaultKey = `-----BEGIN PRIVATE KEY-----
 MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgjuYC2M9La5TVCpc8
@@ -17,18 +18,17 @@ if (secret === defaultKey) {
 
 const key = await importPKCS8(secret, "ES256");
 
-export function EncryptToken(id: string, token: string) {
+export function SignToken(id: string, token: string, expirationTime : number) {
     return new SignJWT({ id, token })
         .setProtectedHeader({ alg: "ES256" })
         .setIssuedAt()
         .setIssuer("urn:example:issuer")
         .setAudience("urn:example:audience")
-        .setExpirationTime("2h")
+        .setExpirationTime(expirationTime)
         .sign(key);
 }
 
-export function DecryptJWT(token: string) {
-    return jwtVerify(token, key);
+export function DecodeJWT(jwt: string) {
+    return jwtVerify(jwt, key);
 }
 
-console.log( await EncryptToken("1", "2"));

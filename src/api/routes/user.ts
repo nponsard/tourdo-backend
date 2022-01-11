@@ -8,7 +8,7 @@ import {
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
-import { EncryptToken, DecryptJWT } from "../../jwt/mod.ts";
+import { DecodeJWT, SignToken } from "../../jwt/mod.ts";
 import { crypto as Dcrypto } from "https://deno.land/std@0.120.0/crypto/mod.ts";
 import { CreateToken } from "../../database/entities/token.ts";
 
@@ -55,24 +55,34 @@ router.post("/login", async (ctx) => {
 
     // generate token
 
-    const token = crypto.randomUUID();
+    const accessToken = crypto.randomUUID();
+    const refreshToken = crypto.randomUUID();
+
+    const oneDay = Date.now() + 1000 * 60 * 60 * 24;
+    const threeWeeks = Date.now() + 1000 * 60 * 60 * 24 * 7 * 3;
 
     // generate jwt
 
-    const jwt = await EncryptToken(user.id.toString(), token);
+    const accessJWT = await SignToken(user.id.toString(), accessToken, oneDay);
+    const refreshJWT = await SignToken(
+        user.id.toString(),
+        refreshToken,
+        threeWeeks
+    );
 
     // store jwt hash in database
-/*
+
     CreateToken(
         ctx.app.state.pool,
-        new TextDecoder().decode(
-            await crypto.subtle.digest("SHA-512", new TextEncoder().encode(jwt))
-        ),
-        user.id
-    );*/
+        user.id,
+        accessToken,
+        new Date(oneDay),
+        refreshToken,
+        new Date(threeWeeks)
+    );
 
     // return jwt
-    SendJSONResponse(ctx, { jwt });
+    SendJSONResponse(ctx, { accessJWT, refreshJWT });
 });
 
 router.get("/", (ctx) => {
