@@ -1,4 +1,4 @@
-import { Pool } from "https://deno.land/x/postgres/mod.ts";
+import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
 export default async function Connect(
   database: string,
@@ -26,7 +26,7 @@ export default async function Connect(
 // connect to database with defaults/env vars
 export async function ConnectDefaults() {
   const DB_HOST = Deno.env.get("DB_HOST") || "localhost";
-  const DB_NAME = Deno.env.get("DB_NAME") || "tournament";
+  const DB_DATABASE = Deno.env.get("DB_DATABASE") || "tournament";
   const DB_USERNAME = Deno.env.get("DB_USERNAME") || "postgres";
   const DB_PASSWORD = Deno.env.get("DB_PASSWORD") || "postgres";
 
@@ -38,7 +38,7 @@ export async function ConnectDefaults() {
   }
 
   const client = await Connect(
-    DB_NAME,
+    DB_DATABASE,
     DB_HOST,
     DB_USERNAME,
     DB_PASSWORD,

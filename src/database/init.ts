@@ -1,6 +1,10 @@
-import { Pool } from "https://deno.land/x/postgres/mod.ts";
+import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
 export default async function Init(pool: Pool) {
+    console.log("Initializing database...");
+
+    const start = Date.now();
+
     const client = await pool.connect();
 
     const scripts = [];
@@ -27,6 +31,11 @@ export default async function Init(pool: Pool) {
         console.log(`Running script ${script.name}`);
         await client.queryObject(script.script);
     }
+
+    const diff = new Date(Date.now() - start);
+    console.log(
+        `Database initialized in ${diff.getMinutes()}m ${diff.getSeconds()}s ${diff.getMilliseconds()}ms`
+    );
 
     client.release();
 }

@@ -1,4 +1,4 @@
-import { Pool } from "https://deno.land/x/postgres/mod.ts";
+import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
 export interface Team {
   id: number;
