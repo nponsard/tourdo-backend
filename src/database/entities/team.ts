@@ -20,7 +20,7 @@ export async function GetTeam(db: Pool, id: number): Promise<Team> {
 
     const result = await client.queryObject<Team>(
         "SELECT * FROM teams WHERE id = $1",
-        [id]
+        id
     );
 
     client.release();
@@ -35,7 +35,7 @@ export async function CreateTeam(
     const client = await db.connect();
     const result = await client.queryObject<Team>(
         "INSERT INTO teams (name, description) VALUES ($1, $2) RETURNING *",
-        [name, description]
+        name, description
     );
 
     client.release();
@@ -51,7 +51,7 @@ export async function GetTeamMembers(
 
     const result = await client.queryObject<User>(
         "SELECT * FROM users WHERE id IN (SELECT user_id FROM teams_composition WHERE team_id = $1)",
-        [teamId]
+        teamId
     );
 
     client.release();
@@ -68,7 +68,7 @@ export async function AddTeamMember(
     const client = await db.connect();
     await client.queryObject(
         "INSERT INTO teams_composition (team_id, user_id, role) VALUES ($1, $2, $3)",
-        [teamId, userId, role]
+        teamId, userId, role
     );
 
     client.release();

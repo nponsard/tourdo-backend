@@ -6,11 +6,13 @@ import { Prefix } from "../utils.ts";
 
 import { CreateUser, GetUserByUsername } from "../../database/entities/user.ts";
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/pool.ts";
+import { ApplicationState } from "../utils.ts";
 
-const router = new Router<{ pool: Pool }>({ prefix: `${Prefix}/user` });
+const router = new Router({ prefix: `${Prefix}/user` });
 
 router.post("/register", async (ctx) => {
     let body;
+    console.log(ctx.app.state.pool);
 
     try {
         body = await ctx.request.body({ type: "json" }).value;
@@ -24,14 +26,13 @@ router.post("/register", async (ctx) => {
     }
 
     try {
-        const used = await GetUserByUsername(ctx.state.pool, body.username);
+        const used = await GetUserByUsername(ctx.app.state.pool, body.username);
         if (used) {
             SendJSONResponse(ctx, { message: "User already exists" }, 400);
             return;
         }
-
         const user = await CreateUser(
-            ctx.state.pool,
+            ctx.app.state.pool,
             body.username,
             body.password
         );

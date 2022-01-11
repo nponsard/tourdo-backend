@@ -10,7 +10,7 @@ export async function GetToken(db: Pool, accessHash: string): Promise<Token> {
 
     const result = await client.queryObject<Token>(
         "SELECT access_hash,user_id FROM tokens WHERE access_hash = $1",
-        [accessHash]
+        accessHash
     );
 
     client.release();
@@ -25,7 +25,7 @@ export async function CreateToken(
     const client = await db.connect();
     const result = await client.queryObject<Token>(
         "INSERT INTO tokens (access_hash,user_id) VALUES ($1, $2) RETURNING *",
-        [accessHash, userId]
+        accessHash, userId
     );
 
     client.release();
