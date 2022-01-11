@@ -9,43 +9,37 @@ import { Pool } from "https://deno.land/x/postgres@v0.14.3/pool.ts";
 
 const router = new Router<{ pool: Pool }>({ prefix: `${Prefix}/user` });
 
-router.post("/register", (ctx) => {
-    console.log(ctx.request.hasBody);
-    return ctx.request
-        .body({ type: "json" })
-        .value.then((val: { password: string; username: string }) => {
-            GetUserByUsername(ctx.state.pool, val.username)
-                .then((user) => {
-                    if (user) {
-                        SendJSONResponse(
-                            ctx,
-                            { message: "User already exists" },
-                            400
-                        );
-                    } else {
-                        CreateUser(
-                            ctx.state.pool,
-                            val.username,
-                            val.password
-                        ).then((user) => {
-                            SendJSONResponse(ctx, user);
-                        });
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+router.post("/register", async (ctx) => {
+    let body;
 
-            if (val.username) {
-                ctx.response.body = {
-                    message: "success",
-                };
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-            SendJSONResponse(ctx, { message: "Bad request" }, 400);
-        });
+    try {
+        body = await ctx.request.body({ type: "json" }).value;
+        if (!body || !body.username || !body.password) {
+            throw new Error("Invalid JSON/body");
+        }
+    } catch (err) {
+        console.log("err :", err);
+        SendJSONResponse(ctx, { message: "Invalid JSON/body" }, 400);
+        return;
+    }
+
+    try {
+        const used = await GetUserByUsername(ctx.state.pool, body.username);
+        if (used) {
+            SendJSONResponse(ctx, { message: "User already exists" }, 400);
+            return;
+        }
+
+        const user = await CreateUser(
+            ctx.state.pool,
+            body.username,
+            body.password
+        );
+        SendJSONResponse(ctx, user);
+    } catch (err) {
+        console.log("err :", err);
+        SendJSONResponse(ctx, { message: "Database error" }, 400);
+    }
 });
 
 router.post("/login", (ctx) => {
