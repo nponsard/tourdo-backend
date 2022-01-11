@@ -58,7 +58,7 @@ export async function CheckCredentials(
     return userAuth.password === password;
 }
 
-export async function GetParticipatioInTeams(db: Pool, userID : number) {
+export async function GetParticipationInTeams(db: Pool, userID : number) {
     const client = await db.connect();
 
     const result = await client.queryObject<Team>(
