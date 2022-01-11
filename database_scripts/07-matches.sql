@@ -1,4 +1,4 @@
-create table matches
+create table if not exists matches
 (
     id            serial
         constraint matches_pk
@@ -15,6 +15,6 @@ create table matches
     date          date
 );
 
-create unique index matches_id_uindex
+create unique index if not exists matches_id_uindex
     on matches (id);
 

@@ -1,4 +1,4 @@
-create table teams_composition
+create table if not exists teams_composition
 (
     user_id int not null
         constraint teams_composition_users_id_fk

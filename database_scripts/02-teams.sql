@@ -1,4 +1,4 @@
-create table teams
+create table if not exists teams
 (
     id          serial
         constraint teams_pk
@@ -9,6 +9,6 @@ create table teams
     win_count   int
 );
 
-create unique index teams_id_uindex
+create unique index if not exists teams_id_uindex
     on teams (id);
 

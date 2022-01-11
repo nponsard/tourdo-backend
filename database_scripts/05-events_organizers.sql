@@ -1,4 +1,4 @@
-create table events_organizers
+create table if not exists events_organizers
 (
     event_id int not null
         constraint events_organizers_events_id_fk

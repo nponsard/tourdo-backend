@@ -1,4 +1,4 @@
-create table tournaments
+create table if not exists tournaments
 (
     id          serial
         constraint tournaments_pk
@@ -13,5 +13,5 @@ create table tournaments
             references events
 );
 
-create unique index tournaments_id_uindex
+create unique index if not exists tournaments_id_uindex
     on tournaments (id);
