@@ -1,0 +1,123 @@
+openapi: "3.0.2"
+info:
+  title: API Title
+  version: "1.0"
+servers:
+  - url: http://localhost:8080/api/v1
+    description: localhost
+  - url: https://dev.juno.nponsard.net/api/v1
+    description: dev server
+  - url: https://tournament.juno.nponsard.net/api/v1
+    description: prod server
+
+paths:
+  /user/{id}:
+    get:
+      tags:
+        - "user"
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+  /user/register:
+    post:
+      tags:
+        - "user"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+
+
+
+
+components:
+  securitySchemes:
+    jwt:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: JWT token
+  responses:
+    "400BadRequest":
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/message"
+
+    "401Unauthorized":
+      description: Invalid token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/message"
+    "403Forbidden":
+      description: not enough permissions
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/message"
+    "500InternalServerError":
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/message"
+  schemas:
+    message:
+      type: object
+      description: object containing a message
+      properties:
+        message:
+          type: string
+tags:
+  - name: user
+    description: User management
+  - name: tournament
+    description: Tournament management
+  - name: token
+    description: Token management
+  - name: team
+    description: Team management
+  - name: matche
+    description: Match management
+  - name: game
+    description: Game management
