@@ -68,11 +68,7 @@ router.post("/login", async (ctx) => {
     // generate jwt
 
     const accessJWT = await SignToken(user.id, accessToken, oneDay);
-    const refreshJWT = await SignToken(
-        user.id.toString(),
-        refreshToken,
-        threeWeeks
-    );
+    const refreshJWT = await SignToken(user.id, refreshToken, threeWeeks);
 
     // store jwt hash in database
 

@@ -22,7 +22,7 @@ export default async function Init(pool: Pool) {
     // sort scripts
 
     scripts.sort((a, b) => {
-        return a.name.localeCompare(b.name);
+        return a.name.localeCompare(b.name, 'en');
     });
 
     // execute scripts
