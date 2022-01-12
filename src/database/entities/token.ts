@@ -9,12 +9,30 @@ export interface Token {
     refresh_token_expiration: Date;
 }
 
-export async function GetToken(db: Pool, accessHash: string): Promise<Token> {
+export async function GetTokensWithAccessToken(
+    db: Pool,
+    accessToken: string
+): Promise<Token> {
     const client = await db.connect();
 
     const result = await client.queryObject<Token>(
-        "SELECT access_hash,user_id FROM tokens WHERE access_hash = $1",
-        accessHash
+        "SELECT id,user_id,token,expiration,refresh_token,refresh_token_expiration FROM tokens WHERE token = $1",
+        accessToken
+    );
+
+    client.release();
+    return result.rows[0];
+}
+
+export async function GetTokensWithRefreshToken(
+    db: Pool,
+    refreshToken: string
+): Promise<Token> {
+    const client = await db.connect();
+
+    const result = await client.queryObject<Token>(
+        "SELECT id,user_id,token,expiration,refresh_token,refresh_token_expiration FROM tokens WHERE refresh_token = $1",
+        refreshToken
     );
 
     client.release();
