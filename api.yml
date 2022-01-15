@@ -223,6 +223,38 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
+  /token/refresh:
+    post:
+      tags:
+        - "token"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        "200":
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
 
 components:
   securitySchemes:
@@ -273,7 +305,7 @@ tags:
     description: Token management
   - name: team
     description: Team management
-  - name: matche
+  - name: match
     description: Match management
   - name: game
     description: Game management
