@@ -8,9 +8,7 @@ create table if not exists tournaments
     date_start  date,
     date_end    date,
     description text,
-    event_id    int
-        constraint tournaments_events_id_fk
-            references events
+    status      int,
 );
 
 create unique index if not exists tournaments_id_uindex

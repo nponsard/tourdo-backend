@@ -11,7 +11,10 @@ create table if not exists matches
             references teams,
     row           int,
     "column"      int,
-    tournament_id int,
+    tournament_id int
+        constraint matches_tournament_id_fk
+            references tournaments,
+
     date          date
 );
 
