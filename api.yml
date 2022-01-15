@@ -223,6 +223,30 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
+
+  /user/logout:
+    post:
+      description: Logout the user and revoke the token and refresh token
+      tags:
+        - "user"
+      security:
+        - jwt: []
+      responses:
+        "200":
+          description: Logout successfull
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+
   /token/refresh:
     post:
       tags:
