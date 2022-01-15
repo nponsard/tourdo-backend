@@ -4,7 +4,8 @@ create table if not exists  "users"
         constraint user_pk
             primary key,
     username varchar(50) not null,
-    password text
+    password text,
+    admin   boolean default false
 );
 
 create unique index if not exists user_id_uindex

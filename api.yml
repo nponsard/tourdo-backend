@@ -11,6 +11,64 @@ servers:
     description: prod server
 
 paths:
+  /user/me:
+    get:
+      summary: Get current user info
+      tags:
+        - user
+      security:
+        - jwt: []
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    patch:
+      description: Update user info/password, must be the user himself, different from PATCH /user/{id} as it requires the confirmation of the old password and you can’t edit the admin property
+      tags:
+        - "user"
+      security:
+        - jwt: []
+      requestBody:
+        description: User info
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                  description: Old password
+                newPassword:
+                  type: string
+                  description: New password
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+
   /user/{id}:
     get:
       tags:
@@ -27,6 +85,64 @@ paths:
                     type: integer
                   username:
                     type: string
+                  admin:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+
+    patch:
+      description: Update user info/password, must be admin
+      tags:
+        - "user"
+      security:
+        - jwt: []
+      requestBody:
+        description: User info
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  nullable: true
+                  type: string
+                admin:
+                  nullable: true
+                  type: boolean
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    delete:
+      description: Delete a user, the user doing the request must be an admin or the user to delete
+      tags:
+        - "user"
+      responses:
+        "200":
+          description: User deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+
         "400":
           $ref: "#/components/responses/400BadRequest"
         "401":
@@ -43,7 +159,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
       responses:
         "201":
           description: User created
@@ -64,9 +185,44 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-
-
-
+  /user/login:
+    post:
+      tags:
+        - "user"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successfull
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          description: Invalid password/username
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
 
 components:
   securitySchemes:
