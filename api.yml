@@ -11,11 +11,11 @@ servers:
     description: prod server
 
 paths:
-  /user/me:
+  /users/me:
     get:
       summary: Get current user info
       tags:
-        - user
+        - users
       security:
         - jwt: []
 
@@ -37,7 +37,7 @@ paths:
     patch:
       description: Update user info/password, must be the user himself, different from PATCH /user/{id} as it requires the confirmation of the old password and you can’t edit the admin property
       tags:
-        - "user"
+        - "users"
       security:
         - jwt: []
       requestBody:
@@ -68,11 +68,44 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
+  /users/{id}/teams:
+    get:
+      summary: Get teams the user participates in
+      tags:
+        - "users"
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  admin:
+                    type: boolean
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
 
-  /user/{id}:
+  /users/{id}:
     get:
       tags:
-        - "user"
+        - "users"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         "200":
           description: User found
@@ -98,8 +131,14 @@ paths:
 
     patch:
       description: Update user info/password, must be admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       tags:
-        - "user"
+        - "users"
       security:
         - jwt: []
       requestBody:
@@ -134,7 +173,13 @@ paths:
     delete:
       description: Delete a user, the user doing the request must be an admin or the user to delete
       tags:
-        - "user"
+        - "users"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         "200":
           description: User deleted
@@ -151,10 +196,10 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-  /user/register:
+  /users/register:
     post:
       tags:
-        - "user"
+        - "users"
       requestBody:
         content:
           application/json:
@@ -185,10 +230,10 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-  /user/login:
+  /users/login:
     post:
       tags:
-        - "user"
+        - "users"
       requestBody:
         content:
           application/json:
@@ -224,11 +269,11 @@ paths:
         "500":
           $ref: "#/components/responses/500InternalServerError"
 
-  /user/logout:
+  /users/logout:
     post:
       description: Logout the user and revoke the token and refresh token
       tags:
-        - "user"
+        - "users"
       security:
         - jwt: []
       responses:
@@ -247,10 +292,10 @@ paths:
         "500":
           $ref: "#/components/responses/500InternalServerError"
 
-  /token/refresh:
+  /tokens/refresh:
     post:
       tags:
-        - "token"
+        - "tokens"
       requestBody:
         content:
           application/json:
@@ -280,6 +325,262 @@ paths:
         "500":
           $ref: "#/components/responses/500InternalServerError"
 
+  /teams:
+    get:
+      summary: Get all teams
+      tags:
+        - "teams"
+      responses:
+        "200":
+          description: Teams found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/team"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    post:
+      description: Create a new team, the user doing the request is automatically added to the team as captain
+      tags:
+        - "teams"
+      security:
+        - jwt: []
+      requestBody:
+        description: Team info
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "201":
+          description: Team created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  description:
+                    type: string
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+  /teams/{id}:
+    get:
+      summary: Get info about a team
+      tags:
+        - "teams"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Team found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/team"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    patch:
+      summary: Update a team info
+      description: Update a team info, the user must be admin or captain of the team
+      tags:
+        - "teams"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Team info
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "200":
+          description: Team updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/team"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    delete:
+      summary: Delete a team
+      description: Delete a team, the user must be admin or captain of the team
+      tags:
+        - "teams"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Team deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+  /teams/{id}/users:
+    get:
+      summary: Get all players of a team
+      tags:
+        - "teams"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Users found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    put:
+      summary: Add a player to a team
+      description: Add a player to a team, the user must be admin or captain of the team
+      tags:
+        - "teams"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: User info
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                role:
+                  type: integer
+                  description:  1 = captain, 0 = player
+      responses:
+        "200":
+          description: User added to team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+  /teams/{id}/users/{userId}:
+    delete:
+      summary: Remove a player from a team
+      description: Remove a player from a team, the user doing the action must be admin, captain of the team or the player to remove
+      tags:
+        - "teams"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User removed from team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
 components:
   securitySchemes:
     jwt:
@@ -320,16 +621,38 @@ components:
       properties:
         message:
           type: string
+    user:
+      type: object
+      description: User object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+    team:
+      type: object
+      description: Team object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        win_count:
+          type: integer
+        match_count:
+          type: integer
 tags:
-  - name: user
+  - name: users
     description: User management
-  - name: tournament
+  - name: tournaments
     description: Tournament management
-  - name: token
+  - name: tokens
     description: Token management
-  - name: team
+  - name: teams
     description: Team management
-  - name: match
+  - name: matches
     description: Match management
-  - name: game
-    description: Game management
+  # - name: games
+  # description: Game management

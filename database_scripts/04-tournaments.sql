@@ -9,6 +9,7 @@ create table if not exists tournaments
     date_end    date,
     description text,
     status      int,
+    game_name  text,
 );
 
 create unique index if not exists tournaments_id_uindex
