@@ -1,17 +1,24 @@
-import { generateKeyPair } from "https://deno.land/x/jose@v4.3.8/index.ts";
+const type = {
+    name: "ECDSA",
+    namedCurve: "P-384",
+};
 
-const cryptoKey = await generateKeyPair("PS256");
+const methods: KeyUsage[] = ["sign", "verify"];
 
-const exportedPrivate = await crypto.subtle.exportKey(
+const key = await crypto.subtle.generateKey(type, true, methods);
+console.log(key);
+
+let e;
+
+const exported = await crypto.subtle.exportKey("jwk", key.privateKey as unknown as CryptoKey);
+
+const imported = await crypto.subtle.importKey(
     "jwk",
-    cryptoKey.privateKey as CryptoKey
+    exported,
+    type,
+    true,
+    methods
 );
-
-const exportedPublic = await crypto.subtle.exportKey(
-    "jwk",
-    cryptoKey.publicKey as CryptoKey
-);
-
-const json = JSON.stringify({ exportedPrivate, exportedPublic });
-
+console.log(imported);
+const json = JSON.stringify(exported);
 console.log(btoa(json));
