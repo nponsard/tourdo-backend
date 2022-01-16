@@ -1,8 +1,9 @@
 import { ApplicationState } from "./utils.ts";
 
-import { User } from "./routes/user.ts";
+import { Users } from "./routes/users.ts";
+import { Tokens } from "./routes/tokens.ts";
 
-const routers = [User];
+const routers = [Users, Tokens];
 
 export default function RegisterRoutes(app: ApplicationState) {
     for (const router of routers) {

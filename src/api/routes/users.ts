@@ -9,14 +9,13 @@ import {
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
 import { DecodeJWT, SignToken } from "../../jwt/mod.ts";
-import { crypto as Dcrypto } from "https://deno.land/std@0.120.0/crypto/mod.ts";
 import {
     CreateToken,
-    GetTokensWithAccessToken,
     GetTokensWithRefreshToken,
 } from "../../database/entities/token.ts";
+import { NewTokenPair } from "../../jwt/tokens.ts";
 
-const router = new Router({ prefix: `${Prefix}/user` });
+const router = new Router({ prefix: `${Prefix}/users` });
 
 router.post("/register", async (ctx) => {
     const body = await ParseBodyJSON<{ password: string; username: string }>(
@@ -59,60 +58,29 @@ router.post("/login", async (ctx) => {
 
     // generate token
 
-    const accessToken = crypto.randomUUID();
-    const refreshToken = crypto.randomUUID();
-
-    const oneDay = Date.now() + 1000 * 60 * 60 * 24;
-    const threeWeeks = Date.now() + 1000 * 60 * 60 * 24 * 7 * 3;
-
-    // generate jwt
-
-    const accessJWT = await SignToken(user.id, accessToken, oneDay);
-    const refreshJWT = await SignToken(user.id, refreshToken, threeWeeks);
+    const tokens = await NewTokenPair(user.id);
 
     // store jwt hash in database
 
     CreateToken(
         ctx.app.state.pool,
         user.id,
-        accessToken,
-        new Date(oneDay),
-        refreshToken,
-        new Date(threeWeeks)
+        tokens.accessToken,
+        new Date(tokens.accessExpiration),
+        tokens.refreshToken,
+        new Date(tokens.refreshExpiration)
     );
 
     // return jwt
-    SendJSONResponse(ctx, { accessJWT, refreshJWT });
+    SendJSONResponse(ctx, {
+        access_token: tokens.accessJWT,
+        refresh_token: tokens.refreshJWT,
+    });
 });
 
-router.post("/refresh", async (ctx) => {
-    const request = await ParseBodyJSON<{ refreshToken: string }>(ctx);
-
-    try {
-        const decoded = await DecodeJWT(request.refreshToken);
-
-        if (!(typeof decoded.payload.token === "string"))
-            throw new Error("Invalid token");
-
-        if (!(typeof decoded.payload.id === "number"))
-            throw new Error("Invalid token");
-
-        const tokens = await GetTokensWithRefreshToken(
-            ctx.app.state.pool,
-            decoded.payload.token
-        );
-
-        if (!tokens || decoded.payload.id != tokens.userId)
-            throw new Error("Invalid token");
-
-        // generate new tokens
-    } catch (e) {
-        console.log("/refresh : ", e);
-    }
-});
 
 router.get("/", (ctx) => {
     ctx.response.body = "Hello World";
 });
 
-export { router as User };
+export { router as Users };
