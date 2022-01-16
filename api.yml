@@ -633,10 +633,117 @@ paths:
                 column:
                   type: integer
                   nullable: true
-                
+
       responses:
         "200":
           description: Match created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/match"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+
+  /matches/{id}:
+    get:
+      summary: Get a match
+      tags:
+        - "matches"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Match found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/match"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    delete:
+      summary: Delete a match
+      tags:
+        - "matches"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Match deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    patch:
+      summary: Update a match
+      description: Update a match, the user must be admin or organizer of the tournament, if changing the tournament_id, the user must be admin or organizer of both
+      tags:
+        - "matches"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Match info
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                team1:
+                  type: integer
+                  nullable: true
+                team2:
+                  type: integer
+                  nullable: true
+                date:
+                  type: string
+                  nullable: true
+                tournament_id:
+                  type: integer
+                  nullable: true
+                row:
+                  type: integer
+                  nullable: true
+                column:
+                  type: integer
+                  nullable: true
+      responses:
+        "200":
+          description: Match updated
           content:
             application/json:
               schema:
@@ -733,7 +840,7 @@ components:
           nullable: true
         date:
           type: number
-      
+
 tags:
   - name: users
     description: User management
