@@ -5,12 +5,12 @@ import {
     JWTHeaderParameters,
     KeyLike,
 } from "https://deno.land/x/jose@v4.3.8/index.ts";
-const defaultKey = `eyJrdHkiOiJvY3QiLCJrIjoiL3NPL0t1VWh4L2VsMkxGVG9Gc3lYUk04TEdSVXhUYlJzYk1FMTRoODB3Z0VreVNZeUVHQ3E4Yyt6VTBETEZQUHlWcytTZVdKTHVEbXovZWRhZ1VqZ2Fhbml1VVVMd3dCSmUyNzZSR0NSV2plNWZncXc0Sno3eU5mSlJqaytYMk1Yc0tNWUhFeTZmb0RyR0laNXVDUnphbTFjTi9ZVGdKQUtHNVRCa1FLU0pBIiwiYWxnIjoiSFM1MTIiLCJrZXlfb3BzIjpbInNpZ24iLCJ2ZXJpZnkiXSwiZXh0Ijp0cnVlfQ==`;
+const defaultKey = `Wzc4LDE5NCwxNzUsMjQ0LDEzNywxMCwyMDcsMTk4LDcyLDYwLDUxLDIzNSwxNDgsMjAzLDI1MCwxMjEsNiwyMzYsODksMTQ1LDEwMiwyMjYsMTIsMjM3LDM3LDY5LDEwNCwxODEsMzQsMTI2LDI1MywyMDYsNDEsMTE1LDEzOCwxMTUsMTcyLDIzNSwxMjAsMjE4LDI1MiwyMjgsODIsNzMsNzMsMTc3LDE0LDEwNiw4NSw3OCwxMzIsMTA3LDEwOCw4NSwyNTMsMTgxLDE0MywyMjUsMzgsMCwxMDcsMjIxLDYsNTcsMjExLDIyMSwxMTYsMTU3LDQyLDM2LDc3LDExOSwxOTYsODIsNSwxNjAsMTY0LDE2OCwyMTEsNTMsNSwyMzgsMCwxMzAsMTEyLDEzMCwzMSwxNDYsMTg3LDIwNiwxMzEsMjQ5LDE3OCwxMTksMTI2LDc1LDIxMSwxNDcsMTYwLDc2LDE1MiwxNDUsMTE0LDM4LDExNSwyNiwxMzQsNzIsMjUsMjQ4LDEyNSwyMDEsMjAsNTEsMjYsMTEyLDk5LDExNCwxMTksMzYsMjM2LDc0LDgzLDc0LDI5LDcyLDIyMyw2Nl0=`;
 
-const secret = Deno.env.get("JWK") || defaultKey;
+const secret = Deno.env.get("JWT_KEY") || defaultKey;
 
 if (secret === defaultKey) {
-    console.error("JWK is unsecure and should be changed");
+    console.error("JWT_KEY is unsecure and should be changed");
 }
 
 // import keys
@@ -20,11 +20,10 @@ let key: KeyLike | Uint8Array;
 try {
     const json = JSON.parse(atob(secret));
 
-    console.log(json);
-
+    const arr = Uint8Array.from(json)
     key = await crypto.subtle.importKey(
-        "jwk",
-        json,
+        "raw",
+        arr,
         { name: "HMAC", hash: "SHA-512" },
         true,
         ["sign", "verify"]
