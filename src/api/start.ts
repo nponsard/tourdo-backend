@@ -10,6 +10,11 @@ export default async function Start(pool: Pool) {
     //   await next();
     // })
 
+    app.use(async (ctx, next) => {
+        ctx.response.headers.set("Access-Control-Allow-Origin", "*");
+        await next();
+    });
+
     RegisterRoutes(app);
 
     await app.listen({ port: 3000 });
