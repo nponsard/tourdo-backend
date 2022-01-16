@@ -1,4 +1,4 @@
-import { SignToken } from "./mod.ts";
+import { SignToken } from "./signature.ts";
 
 export async function NewTokenPair(userId: number) {
     const accessToken = crypto.randomUUID();

@@ -12,7 +12,7 @@ import {
 } from "../../database/entities/token.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
-import { DecodeJWT } from "../../jwt/mod.ts";
+import { DecodeJWT } from "../../jwt/signature.ts";
 import { NewTokenPair } from "../../jwt/tokens.ts";
 
 const router = new Router({ prefix: `${Prefix}/tokens` });

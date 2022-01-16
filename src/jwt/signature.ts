@@ -21,8 +21,6 @@ export function SignToken(id: number, token: string, expirationTime: number) {
     return new SignJWT({ id, token })
         .setProtectedHeader({ alg: "ES256" })
         .setIssuedAt()
-        .setIssuer("urn:example:issuer")
-        .setAudience("urn:example:audience")
         .setExpirationTime(expirationTime)
         .sign(key);
 }

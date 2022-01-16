@@ -3,7 +3,7 @@ import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 export interface Token {
     id: number;
     userId: number;
-    token: string;
+    accessToken: string;
     expiration: Date;
     refresh_token: string;
     refresh_token_expiration: Date;
@@ -16,7 +16,7 @@ export async function GetTokensWithAccessToken(
     const client = await db.connect();
 
     const result = await client.queryObject<Token>(
-        "SELECT id,user_id,token,expiration,refresh_token,refresh_token_expiration FROM tokens WHERE token = $1",
+        "SELECT id,user_id,access_token,expiration,refresh_token,refresh_token_expiration FROM tokens WHERE accessToken = $1",
         accessToken
     );
 
@@ -31,7 +31,7 @@ export async function GetTokensWithRefreshToken(
     const client = await db.connect();
 
     const result = await client.queryObject<Token>(
-        "SELECT id,user_id,token,expiration,refresh_token,refresh_token_expiration FROM tokens WHERE refresh_token = $1",
+        "SELECT id,user_id,access_token,expiration,refresh_token,refresh_token_expiration FROM tokens WHERE refresh_token = $1",
         refreshToken
     );
 
@@ -42,16 +42,16 @@ export async function GetTokensWithRefreshToken(
 export async function CreateToken(
     db: Pool,
     userId: number,
-    token: string,
+    accessToken: string,
     expiration: Date,
     refreshToken: string,
     refreshTokenExpiration: Date
 ): Promise<Token> {
     const client = await db.connect();
     const result = await client.queryObject<Token>(
-        "INSERT INTO tokens (user_id, token, expiration, refresh_token, refresh_token_expiration) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+        "INSERT INTO tokens (user_id, access_token, expiration, refresh_token, refresh_token_expiration) VALUES ($1, $2, $3, $4, $5) RETURNING *",
         userId,
-        token,
+        accessToken,
         expiration,
         refreshToken,
         refreshTokenExpiration

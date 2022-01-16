@@ -6,7 +6,7 @@ create table if not exists tokens
     user_id     int  not null
         constraint tokens_users_id_fk
             references users,
-    token       text not null,
+    access_token       text not null,
     expiration date not null,
     refresh_token text not null,
     refresh_token_expiration date not null
