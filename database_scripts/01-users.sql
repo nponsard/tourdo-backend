@@ -5,7 +5,8 @@ create table if not exists  "users"
             primary key,
     username varchar(50) not null,
     password text,
-    admin   boolean default false
+    admin   boolean default false,
+    UNIQUE(username)
 );
 
 create unique index if not exists user_id_uindex

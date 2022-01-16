@@ -2,6 +2,7 @@ import {
     SignJWT,
     jwtVerify,
     importPKCS8,
+    JWTHeaderParameters,
 } from "https://deno.land/x/jose@v4.3.8/index.ts";
 const defaultKey = `-----BEGIN PRIVATE KEY-----
 MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgjuYC2M9La5TVCpc8
@@ -25,6 +26,9 @@ export function SignToken(id: number, token: string, expirationTime: number) {
         .sign(key);
 }
 
-export async function DecodeJWT(jwt: string) {
-    return await jwtVerify(jwt, key);
+export function DecodeJWT(jwt: string) {
+    return jwtVerify(jwt, key) as Promise<{
+        payload: { id: number; token: string };
+        protectedHeader: JWTHeaderParameters;
+    }>;
 }

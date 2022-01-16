@@ -10,6 +10,7 @@ export interface UserAuth {
 export interface User {
     id: number;
     username: string;
+    admin: boolean;
 }
 
 export async function GetUserByUsername(
@@ -20,7 +21,7 @@ export async function GetUserByUsername(
     const client = await pool.connect();
 
     const result = await client.queryObject<User>(
-        "SELECT * FROM users WHERE username = $1",
+        "SELECT id, username, admin FROM users WHERE username = $1",
         username
     );
 
@@ -32,7 +33,7 @@ export async function GetUser(db: Pool, id: number): Promise<User | undefined> {
     const client = await db.connect();
 
     const result = await client.queryObject<User>(
-        "SELECT id,username FROM users WHERE id = $1",
+        "SELECT id,username, admin FROM users WHERE id = $1",
         id
     );
 
@@ -47,7 +48,7 @@ export async function CreateUser(
 ): Promise<User> {
     const client = await db.connect();
     const result = await client.queryObject<User>(
-        "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id,username",
+        "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id,username, admin",
         username,
         password
     );
