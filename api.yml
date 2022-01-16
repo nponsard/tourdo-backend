@@ -82,7 +82,7 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: integer
+                    type: number
                   username:
                     type: string
                   admin:
@@ -105,7 +105,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: User found
@@ -115,7 +115,7 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: integer
+                    type: number
                   username:
                     type: string
                   admin:
@@ -136,7 +136,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       tags:
         - "users"
       security:
@@ -179,7 +179,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: User deleted
@@ -219,7 +219,7 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: integer
+                    type: number
                   username:
                     type: string
         "400":
@@ -373,7 +373,7 @@ paths:
                 type: object
                 properties:
                   id:
-                    type: integer
+                    type: number
                   name:
                     type: string
                   description:
@@ -396,7 +396,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: Team found
@@ -424,7 +424,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       requestBody:
         description: Team info
         content:
@@ -463,7 +463,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: Team deleted
@@ -489,7 +489,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: Users found
@@ -519,7 +519,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       requestBody:
         description: User info
         content:
@@ -528,9 +528,9 @@ paths:
               type: object
               properties:
                 id:
-                  type: integer
+                  type: number
                 role:
-                  type: integer
+                  type: number
                   description: 1 = captain, 0 = player
       responses:
         "200":
@@ -560,12 +560,12 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
         - name: userId
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: User removed from team
@@ -619,19 +619,19 @@ paths:
               type: object
               properties:
                 team1:
-                  type: integer
+                  type: number
                 team2:
-                  type: integer
+                  type: number
                 date:
                   type: string
                 tournament_id:
-                  type: integer
+                  type: number
                   nullable: true
                 row:
-                  type: integer
+                  type: number
                   nullable: true
                 column:
-                  type: integer
+                  type: number
                   nullable: true
 
       responses:
@@ -660,7 +660,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: Match found
@@ -687,7 +687,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       responses:
         "200":
           description: Match deleted
@@ -715,7 +715,7 @@ paths:
           in: path
           required: true
           schema:
-            type: integer
+            type: number
       requestBody:
         description: Match info
         content:
@@ -724,25 +724,25 @@ paths:
               type: object
               properties:
                 team1:
-                  type: integer
+                  type: number
                   nullable: true
                 team2:
-                  type: integer
+                  type: number
                   nullable: true
                 date:
                   type: string
                   nullable: true
                 tournament_id:
-                  type: integer
+                  type: number
                   nullable: true
                 row:
-                  type: integer
+                  type: number
                   nullable: true
                 column:
-                  type: integer
+                  type: number
                   nullable: true
                 winner_id:
-                  type: integer
+                  type: number
                   nullable: true
       responses:
         "200":
@@ -759,7 +759,182 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-  
+
+  /tournaments:
+    get:
+      summary: Get all tournaments
+      tags:
+        - "tournaments"
+      responses:
+        "200":
+          description: Tournaments found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/tournament"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    post:
+      summary: Create a tournament
+      description: Create a tournament, the user must be an admin or organizer of the tournament
+      tags:
+        - "tournaments"
+      security:
+        - jwt: []
+      requestBody:
+        description: Tournament info
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: number
+                name:
+                  type: string
+                start_date:
+                  type: string
+                end_date:
+                  type: string
+                description:
+                  type: string
+                max_teams:
+                  type: number
+                game_name:
+                  type: string
+
+      responses:
+        "200":
+          description: Tournament created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tournament"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+  /tournaments/{id}:
+    get:
+      summary: Get a tournament
+      tags:
+        - "tournaments"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Tournament found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tournament"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    delete:
+      summary: Delete a tournament
+      tags:
+        - "tournaments"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Tournament deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    patch:
+      summary: Update a tournament
+      description: Update a tournament, the user must be admin or organizer of the tournament, can’t update type because it requires too much changes.
+      tags:
+        - "tournaments"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        description: Tournament info
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  nullable: true
+                start_date:
+                  type: string
+                  nullable: true
+                end_date:
+                  type: string
+                  nullable: true
+                description:
+                  type: string
+                  nullable: true
+                max_teams:
+                  type: number
+                  nullable: true
+                game_name:
+                  type: string
+                  nullable: true
+                status:
+                  type: number
+                  nullable: true
+      responses:
+        "200":
+          description: Tournament updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tournament"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
 components:
   securitySchemes:
     jwt:
@@ -805,7 +980,7 @@ components:
       description: User object
       properties:
         id:
-          type: integer
+          type: number
         username:
           type: string
     team:
@@ -813,36 +988,60 @@ components:
       description: Team object
       properties:
         id:
-          type: integer
+          type: number
         name:
           type: string
         description:
           type: string
         win_count:
-          type: integer
+          type: number
         match_count:
-          type: integer
+          type: number
     match:
       type: object
       description: Match object
       properties:
         id:
-          type: integer
+          type: number
         team_1_id:
-          type: integer
+          type: number
         team_2_id:
-          type: integer
+          type: number
         row:
-          type: integer
+          type: number
+          nullable: true
         column:
-          type: integer
+          type: number
+          nullable: true
         tournament_id:
-          type: integer
+          type: number
           nullable: true
         winner_id:
-          type: integer
+          type: number
           nullable: true
         date:
+          type: number
+    tournament:
+      type: object
+      description: Tournament object
+      properties:
+        id:
+          type: number
+        type:
+          type: number
+        name:
+          type: string
+        start_date:
+          type: number
+        end_date:
+          type: number
+        description:
+          type: string
+        status:
+          type: number
+        game_name:
+          type: string
+        max_teams:
           type: number
 
 tags:

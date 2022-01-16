@@ -5,10 +5,11 @@ create table if not exists tournaments
             primary key,
     type        int,
     name        text,
-    date_start  date,
-    date_end    date,
+    start_date  date,
+    end_date    date,
     description text,
     status      int,
+    max_teams int,
     game_name  text,
 );
 
