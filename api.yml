@@ -531,7 +531,7 @@ paths:
                   type: integer
                 role:
                   type: integer
-                  description:  1 = captain, 0 = player
+                  description: 1 = captain, 0 = player
       responses:
         "200":
           description: User added to team
@@ -573,6 +573,74 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+
+  /matches:
+    get:
+      summary: Get all matches
+      tags:
+        - "matches"
+      responses:
+        "200":
+          description: Matches found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/match"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    post:
+      summary: Create a match
+      description: Create a match, if tournament_id is specified, the user must be a tournament organizer or an admin and must specify the row and column of the match
+      tags:
+        - "matches"
+      security:
+        - jwt: []
+      requestBody:
+        description: Match info
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                team1:
+                  type: integer
+                team2:
+                  type: integer
+                date:
+                  type: string
+                tournament_id:
+                  type: integer
+                  nullable: true
+                row:
+                  type: integer
+                  nullable: true
+                column:
+                  type: integer
+                  nullable: true
+                
+      responses:
+        "200":
+          description: Match created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/match"
         "400":
           $ref: "#/components/responses/400BadRequest"
         "401":
@@ -643,6 +711,29 @@ components:
           type: integer
         match_count:
           type: integer
+    match:
+      type: object
+      description: Match object
+      properties:
+        id:
+          type: integer
+        team_1_id:
+          type: integer
+        team_2_id:
+          type: integer
+        row:
+          type: integer
+        column:
+          type: integer
+        tournament_id:
+          type: integer
+          nullable: true
+        winner_id:
+          type: integer
+          nullable: true
+        date:
+          type: number
+      
 tags:
   - name: users
     description: User management

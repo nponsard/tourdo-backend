@@ -9,9 +9,9 @@ create table if not exists matches
     team2_id      int not null
         constraint matches_team2__fk
             references teams,
-    row           int,
-    "column"      int,
-    tournament_id serial
+    row           int default null,
+    "column"      int default null,
+    tournament_id serial default null
         constraint matches_tournament_id_fk
             references tournaments,
     winner_id     int
