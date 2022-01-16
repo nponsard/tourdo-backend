@@ -11,7 +11,7 @@ create table if not exists matches
             references teams,
     row           int default null,
     "column"      int default null,
-    tournament_id serial default null
+    tournament_id integer not null
         constraint matches_tournament_id_fk
             references tournaments,
     winner_id     int
