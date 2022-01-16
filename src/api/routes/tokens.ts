@@ -1,16 +1,11 @@
 import { Router } from "https://deno.land/x/oak@v10.1.0/mod.ts";
 import { SendJSONResponse, ParseBodyJSON } from "../utils.ts";
 import { Prefix } from "../utils.ts";
-import {
-    CreateUser,
-    GetUserByUsername,
-    GetUserAuth,
-} from "../../database/entities/user.ts";
+
 import {
     CreateToken,
     GetTokensWithRefreshToken,
 } from "../../database/entities/token.ts";
-import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
 import { DecodeJWT } from "../../jwt/signature.ts";
 import { NewTokenPair } from "../../jwt/tokens.ts";

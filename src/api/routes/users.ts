@@ -8,10 +8,8 @@ import {
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
-import { DecodeJWT, SignToken } from "../../jwt/signature.ts";
 import {
     CreateToken,
-    GetTokensWithRefreshToken,
 } from "../../database/entities/token.ts";
 import { NewTokenPair } from "../../jwt/tokens.ts";
 
@@ -77,7 +75,6 @@ router.post("/login", async (ctx) => {
         refresh_token: tokens.refreshJWT,
     });
 });
-
 
 router.get("/", (ctx) => {
     ctx.response.body = "Hello World";
