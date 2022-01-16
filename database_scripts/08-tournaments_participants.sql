@@ -1,7 +1,9 @@
 create table if not exists tournaments_participants
 (
-    team_id       int not null,
-    tournament_id int not null,
+    team_id       int not null
+    references teams,
+    tournament_id serial not null
+    references  tournaments,
     team_number   int,
     constraint tournaments_participants_pk
         primary key (team_id, tournament_id)

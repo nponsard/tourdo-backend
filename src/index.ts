@@ -8,8 +8,17 @@ const pool = ConnectDefaults();
 
 // test connection
 
-const client = await pool.connect();
-client.release();
+let connected = false;
+
+while (!connected) {
+    try {
+        await pool.connect();
+        connected = true;
+    } catch (e) {
+        console.error("error when connecting to the database (retry in 1s) : ", e);
+        Deno.sleepSync(1000);
+    }
+}
 
 if (INIT_DB === "true") {
     await Init(pool);

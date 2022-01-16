@@ -8,10 +8,9 @@ import {
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
-import {
-    CreateToken,
-} from "../../database/entities/token.ts";
+import { CreateToken } from "../../database/entities/token.ts";
 import { NewTokenPair } from "../../jwt/tokens.ts";
+import { GetUserWithAccessToken } from "../../jwt/user.ts";
 
 const router = new Router({ prefix: `${Prefix}/users` });
 
@@ -60,7 +59,7 @@ router.post("/login", async (ctx) => {
 
     // store jwt hash in database
 
-    CreateToken(
+    await CreateToken(
         ctx.app.state.pool,
         user.id,
         tokens.accessToken,
@@ -70,10 +69,21 @@ router.post("/login", async (ctx) => {
     );
 
     // return jwt
-    SendJSONResponse(ctx, {
+    return SendJSONResponse(ctx, {
         access_token: tokens.accessJWT,
         refresh_token: tokens.refreshJWT,
     });
+});
+
+router.get("/me", async (ctx) => {
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("authorization")
+    );
+
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    return SendJSONResponse(ctx, user);
 });
 
 router.get("/", (ctx) => {
