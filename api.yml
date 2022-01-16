@@ -741,6 +741,9 @@ paths:
                 column:
                   type: integer
                   nullable: true
+                winner_id:
+                  type: integer
+                  nullable: true
       responses:
         "200":
           description: Match updated
@@ -756,6 +759,7 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
+  
 components:
   securitySchemes:
     jwt:
