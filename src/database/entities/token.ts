@@ -2,7 +2,7 @@ import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
 export interface Token {
     id: number;
-    userId: number;
+    user_id: number;
     accessToken: string;
     expiration: Date;
     refresh_token: string;
@@ -16,7 +16,7 @@ export async function GetTokensWithAccessToken(
     const client = await db.connect();
 
     const result = await client.queryObject<Token>(
-        "SELECT id,user_id,access_token,expiration,refresh_token,refresh_token_expiration FROM tokens WHERE accessToken = $1",
+        "SELECT id,user_id,access_token,expiration,refresh_token,refresh_token_expiration FROM tokens WHERE access_token = $1",
         accessToken
     );
 

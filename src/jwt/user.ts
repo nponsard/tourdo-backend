@@ -14,14 +14,17 @@ export async function GetUserWithAccessToken(
     if (!decoded) return null;
 
     // check if token is valid in database
-    const tokens = await GetTokensWithAccessToken(pool, decoded.payload.token);
-    if (!tokens || tokens.userId != decoded.payload.id) return null;
+    const tokens = await GetTokensWithAccessToken(pool, decoded.token);
+    if (
+        !tokens ||
+        tokens.user_id != decoded.id ||
+        tokens.expiration.getTime() < Date.now() /* invalid if expired  */
+    )
+        return null;
 
     // get the user
-    const user = await GetUser(pool, tokens.userId);
+    const user = await GetUser(pool, tokens.user_id);
     if (!user) return null;
 
-    return {
-        user,
-    };
+    return user;
 }

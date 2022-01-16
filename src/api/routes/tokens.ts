@@ -18,28 +18,31 @@ router.post("/refresh", async (ctx) => {
     try {
         const decoded = await DecodeJWT(request.refreshToken);
 
-        if (!(typeof decoded.payload.token === "string"))
+        if (!(typeof decoded.token === "string"))
             throw new Error("Invalid token");
 
-        if (!(typeof decoded.payload.id === "number"))
-            throw new Error("Invalid token");
+        if (!(typeof decoded.id === "number")) throw new Error("Invalid token");
 
         const tokens = await GetTokensWithRefreshToken(
             ctx.app.state.pool,
-            decoded.payload.token
+            decoded.token
         );
 
-        if (!tokens || decoded.payload.id != tokens.userId)
+        if (
+            !tokens ||
+            decoded.id != tokens.user_id ||
+            tokens.refresh_token_expiration.getTime() < Date.now() /* invalid if expired  */
+        )
             throw new Error("Invalid token");
 
         // generate new tokens
-        const newTokens = await NewTokenPair(tokens.userId);
+        const newTokens = await NewTokenPair(tokens.user_id);
 
         // save token
 
         await CreateToken(
             ctx.app.state.pool,
-            tokens.userId,
+            tokens.user_id,
             newTokens.accessToken,
             new Date(Date.now() + 3600 * 1000),
             newTokens.refreshToken,

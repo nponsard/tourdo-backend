@@ -7,8 +7,9 @@ create table if not exists tokens
         constraint tokens_users_id_fk
             references users,
     access_token       text not null,
-    expiration date not null,
+    expiration timestamp not null,
     refresh_token text not null,
-    refresh_token_expiration date not null
+    refresh_token_expiration timestamp not null
 );
 
+    
