@@ -13,7 +13,11 @@ import {
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
-import { CreateToken } from "../../database/entities/token.ts";
+import {
+    CreateToken,
+    DeleteToken,
+    GetTokensWithAccessToken,
+} from "../../database/entities/token.ts";
 import { NewTokenPair } from "../../jwt/tokens.ts";
 import { GetUserWithAccessToken } from "../../jwt/user.ts";
 
@@ -239,6 +243,30 @@ router.delete("/:id", async (ctx) => {
         return SendJSONResponse(ctx, { message: "Database error" }, 500);
     }
     return SendJSONResponse(ctx, { message: "User deleted" });
+});
+
+router.post("/logout", async (ctx) => {
+    const token = ctx.request.headers.get("authorization");
+
+    const user = await GetUserWithAccessToken(ctx.app.state.pool, token);
+    if (!user || token == undefined)
+        return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    const accessToken = await GetTokensWithAccessToken(
+        ctx.app.state.pool,
+        token
+    );
+
+    if (!accessToken)
+        return SendJSONResponse(ctx, { message: "Not found" }, 404);
+
+    try {
+        await DeleteToken(ctx.app.state.pool, accessToken.id);
+    } catch (e) {
+        console.log(e);
+        return SendJSONResponse(ctx, { message: "Database error" }, 500);
+    }
+    return SendJSONResponse(ctx, { message: "Logged out" }, 200);
 });
 
 export { router as Users };

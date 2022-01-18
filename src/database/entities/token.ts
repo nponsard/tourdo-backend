@@ -61,3 +61,17 @@ export async function CreateToken(
 
     return result.rows[0];
 }
+
+
+export async function DeleteToken(
+    db: Pool,
+    id: number
+): Promise<void> {
+    const client = await db.connect();
+    await client.queryObject(
+        "DELETE FROM tokens WHERE id = $1",
+        id
+    );
+
+    client.release();
+}
