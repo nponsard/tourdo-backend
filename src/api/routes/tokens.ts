@@ -4,6 +4,7 @@ import { Prefix } from "../utils.ts";
 
 import {
     CreateToken,
+    DeleteToken,
     GetTokensWithRefreshToken,
 } from "../../database/entities/token.ts";
 
@@ -12,51 +13,66 @@ import { NewTokenPair } from "../../jwt/tokens.ts";
 
 const router = new Router({ prefix: `${Prefix}/tokens` });
 
-
 //TODO : invalidate old tokens
 router.post("/refresh", async (ctx) => {
     const request = await ParseBodyJSON<{ refreshToken: string }>(ctx);
 
+    const decoded = await DecodeJWT(request.refreshToken);
+
+    if (!(typeof decoded.token === "string")) throw new Error("Invalid token");
+
+    if (!(typeof decoded.id === "number")) throw new Error("Invalid token");
+
+    const tokens = await GetTokensWithRefreshToken(
+        ctx.app.state.pool,
+        decoded.token
+    );
+
+    if (
+        !tokens ||
+        decoded.id != tokens.user_id ||
+        tokens.refresh_token_expiration.getTime() <
+            Date.now() /* invalid if expired  */
+    )
+        throw new Error("Invalid token");
+
+    // generate new tokens
+    const newTokens = await NewTokenPair(tokens.user_id);
+
+    // save token
+
+    await CreateToken(
+        ctx.app.state.pool,
+        tokens.user_id,
+        newTokens.accessToken,
+        new Date(Date.now() + 3600 * 1000),
+        newTokens.refreshToken,
+        new Date(Date.now() + 3600 * 1000 * 24 * 30)
+    );
+
+
+
+    // critical section, we must not delete the old token in case of a crash, but failing to delete the old token must not crash the request
+
     try {
-        const decoded = await DecodeJWT(request.refreshToken);
-
-        if (!(typeof decoded.token === "string"))
-            throw new Error("Invalid token");
-
-        if (!(typeof decoded.id === "number")) throw new Error("Invalid token");
-
-        const tokens = await GetTokensWithRefreshToken(
-            ctx.app.state.pool,
-            decoded.token
-        );
-
-        if (
-            !tokens ||
-            decoded.id != tokens.user_id ||
-            tokens.refresh_token_expiration.getTime() < Date.now() /* invalid if expired  */
-        )
-            throw new Error("Invalid token");
-
-        // generate new tokens
-        const newTokens = await NewTokenPair(tokens.user_id);
-
-        // save token
-
-        await CreateToken(
-            ctx.app.state.pool,
-            tokens.user_id,
-            newTokens.accessToken,
-            new Date(Date.now() + 3600 * 1000),
-            newTokens.refreshToken,
-            new Date(Date.now() + 3600 * 1000 * 24 * 30)
-        );
-
         SendJSONResponse(ctx, {
             accessToken: newTokens.accessJWT,
             refreshToken: newTokens.refreshJWT,
         });
+
+
+        try {
+            await DeleteToken(ctx.app.state.pool, tokens.id);
+        } catch (err) {
+            console.log("Token delete err :", err);
+        }
     } catch (e) {
-        console.log("/refresh : ", e);
+        console.log("refreshToken : ", e);
+        SendJSONResponse(
+            ctx,
+            { message: "Critical error occured (json serialisation)" },
+            500
+        );
     }
 });
 
