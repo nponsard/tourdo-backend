@@ -5,6 +5,7 @@ import {
     CreateUser,
     GetUserByUsername,
     GetUserAuth,
+GetUser,
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
@@ -94,7 +95,12 @@ router.get("/me", async (ctx) => {
 });
 
 router.get("/users/:id", async (ctx) => {
-    console.log(ctx.params.id);
+
+    const user = await GetUser(ctx.app.state.pool, parseInt (ctx.params.id));
+
+    if (!user) return SendJSONResponse(ctx, { message: "Not found" }, 404);
+
+    return SendJSONResponse(ctx, user);
 });
 
 export { router as Users };
