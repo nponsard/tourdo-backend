@@ -35,6 +35,7 @@ paths:
         "500":
           $ref: "#/components/responses/500InternalServerError"
     patch:
+      summary: Update current user password
       description: Update user password, must be the user himself, different from PATCH /user/{id} as it requires the confirmation of the old password and you can’t edit the admin property
       tags:
         - "users"

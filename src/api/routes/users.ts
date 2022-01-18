@@ -7,6 +7,7 @@ import {
     GetUserAuth,
     GetUser,
     UpdatePassword,
+    GetParticipationInTeams,
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
@@ -135,6 +136,15 @@ router.patch("/me", async (ctx) => {
     }
 
     return SendJSONResponse(ctx, { message: "Password changed" });
+});
+
+router.get("/:id/teams", async (ctx) => {
+    const teams = await GetParticipationInTeams(
+        ctx.app.state.pool,
+        parseInt(ctx.params.id)
+    );
+
+    return SendJSONResponse(ctx, teams);
 });
 
 router.get("/:id", async (ctx) => {

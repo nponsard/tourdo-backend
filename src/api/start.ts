@@ -10,6 +10,7 @@ export default async function Start(pool: Pool) {
     //   await next();
     // })
 
+    // CORS
     app.use(async (ctx, next) => {
         ctx.response.headers.set("Access-Control-Allow-Origin", "*");
         ctx.response.headers.set(
@@ -25,10 +26,22 @@ export default async function Start(pool: Pool) {
         if (ctx.request.method === "OPTIONS") {
             ctx.response.status = 200;
 
-            return; 
+            return;
         }
 
         await next();
+    });
+
+    // error handling
+    app.use(async (ctx, next) => {
+        try {
+            await next();
+        } catch (e) {
+            console.error("Error on ", ctx.request.url, e);
+
+            ctx.response.status = 500;
+            ctx.response.body = { message: "Internal server error" };
+        }
     });
 
     RegisterRoutes(app);
