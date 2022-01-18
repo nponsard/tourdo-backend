@@ -13,7 +13,6 @@ import { NewTokenPair } from "../../jwt/tokens.ts";
 
 const router = new Router({ prefix: `${Prefix}/tokens` });
 
-//TODO : invalidate old tokens
 router.post("/refresh", async (ctx) => {
     const request = await ParseBodyJSON<{ refreshToken: string }>(ctx);
 
