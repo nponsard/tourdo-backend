@@ -16,6 +16,15 @@ services:
       - DB_PASSWORD=example
       - DB_DATABASE=postgres
       - JWK=WzU5LDE2MiwxOTcsMjM1LDIxNSwyMTEsODcsMjQyLDQxLDUsMTkyLDExLDI1NSwyMDAsMjQxLDQxLDE1OCw4MywxNzQsMjE3LDE2NSwxNzgsMTE0LDIwMiwxMzMsODQsODgsNTcsMTM2LDE2MCwyNSwxNjEsMTk0LDQxLDIxOSwxMDMsMzQsMTk3LDIzNywxNSw4NywxMTgsNDcsNjIsMTc5LDIxMiwxMzIsODIsMjQ5LDIwMCwxNDYsMTA2LDQ0LDIxMywxMjksNzIsNzIsNjAsMjI1LDIyMSwyNDQsMjEzLDEyMyw4LDkxLDE1OCw1NywxNjcsNzMsMTQ1LDY2LDExNywxODIsMzgsMTEyLDE0OCwyMjcsMjQ4LDEyMCwyMTMsNTksNTcsMTY2LDI1LDE2Nyw1NiwxODQsMTAwLDIxLDI0NiwxNjgsNTQsMjA3LDI0MSwyMDcsMTQ3LDExNiw4MCwyMDMsMTgyLDE5MCw0NiwyMDAsMTY2LDE4MSw1LDE2NiwxMDksMjMzLDg1LDE5MSw4OCwxMywxMTAsODcsMTksMTM4LDIzNSwyNTEsMzMsMTcyLDY3LDU4LDEsMTIyLDIxNywxMzAsMTRd
+  
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8082:8080"
+    environment:
+      - SWAGGER_JSON=/swagger.yml
+    volumes:
+      - ./api.yml:/swagger.yml
   db:
     image: postgres
     restart: always

@@ -22,18 +22,22 @@ router.post("/register", async (ctx) => {
     try {
         const used = await GetUserByUsername(ctx.app.state.pool, body.username);
         if (used) {
-            SendJSONResponse(ctx, { message: "User already exists" }, 400);
-            return;
+            return SendJSONResponse(
+                ctx,
+                { message: "User already exists" },
+                400
+            );
         }
         const user = await CreateUser(
             ctx.app.state.pool,
             body.username,
             await bcrypt.hash(body.password)
         );
-        SendJSONResponse(ctx, user);
+        console.log(user);
+        return SendJSONResponse(ctx, user, 201);
     } catch (err) {
         console.log("err :", err);
-        SendJSONResponse(ctx, { message: "Database error" }, 400);
+        return SendJSONResponse(ctx, { message: "Database error" }, 400);
     }
 });
 
@@ -49,8 +53,11 @@ router.post("/login", async (ctx) => {
     console.log(user);
 
     if (!user || !(await bcrypt.compare(body.password, user.password))) {
-        SendJSONResponse(ctx, { message: "Wrong username/Password" }, 401);
-        return;
+        return SendJSONResponse(
+            ctx,
+            { message: "Wrong username/Password" },
+            401
+        );
     }
 
     // generate token
@@ -86,8 +93,8 @@ router.get("/me", async (ctx) => {
     return SendJSONResponse(ctx, user);
 });
 
-router.get("/", (ctx) => {
-    ctx.response.body = "Hello World";
+router.get("/users/:id", async (ctx) => {
+    console.log(ctx.params.id);
 });
 
 export { router as Users };

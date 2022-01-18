@@ -12,6 +12,22 @@ export default async function Start(pool: Pool) {
 
     app.use(async (ctx, next) => {
         ctx.response.headers.set("Access-Control-Allow-Origin", "*");
+        ctx.response.headers.set(
+            "Access-Control-Allow-Methods",
+            "GET, POST, DELETE, PUT, PATCH, OPTIONS"
+        );
+
+        ctx.response.headers.set(
+            "Access-Control-Allow-Headers",
+            "Content-Type, Authorization"
+        );
+
+        if (ctx.request.method === "OPTIONS") {
+            ctx.response.status = 200;
+
+            return; 
+        }
+
         await next();
     });
 
