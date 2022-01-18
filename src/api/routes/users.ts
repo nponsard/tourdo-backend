@@ -5,7 +5,8 @@ import {
     CreateUser,
     GetUserByUsername,
     GetUserAuth,
-GetUser,
+    GetUser,
+    UpdatePassword,
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
@@ -94,9 +95,50 @@ router.get("/me", async (ctx) => {
     return SendJSONResponse(ctx, user);
 });
 
-router.get("/users/:id", async (ctx) => {
+/**
+ * @api {patch} /users/me change password
+ */
+router.patch("/me", async (ctx) => {
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("authorization")
+    );
 
-    const user = await GetUser(ctx.app.state.pool, parseInt (ctx.params.id));
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    const body = await ParseBodyJSON<{
+        oldPassword: string;
+        newPassword: string;
+    }>(ctx);
+
+    if (body.newPassword == body.oldPassword)
+        return SendJSONResponse(
+            ctx,
+            { message: "New password is the same" },
+            400
+        );
+
+    const userAuth = await GetUserAuth(ctx.app.state.pool, user.username);
+
+    if (!(await bcrypt.compare(body.oldPassword, userAuth.password)))
+        return SendJSONResponse(ctx, { message: "Wrong password" }, 400);
+
+    try {
+        await UpdatePassword(
+            ctx.app.state.pool,
+            user.id,
+            await bcrypt.hash(body.newPassword)
+        );
+    } catch (e) {
+        console.error(e);
+        return SendJSONResponse(ctx, { message: "Database error" }, 500);
+    }
+
+    return SendJSONResponse(ctx, { message: "Password changed" });
+});
+
+router.get("/:id", async (ctx) => {
+    const user = await GetUser(ctx.app.state.pool, parseInt(ctx.params.id));
 
     if (!user) return SendJSONResponse(ctx, { message: "Not found" }, 404);
 

@@ -84,3 +84,19 @@ export async function GetParticipationInTeams(db: Pool, userID: number) {
     client.release();
     return result.rows;
 }
+
+export async function UpdatePassword(
+    db: Pool,
+    userID: number,
+    password: string
+): Promise<boolean> {
+    const client = await db.connect();
+    const result = await client.queryObject(
+        "UPDATE users SET password = $1 WHERE id = $2",
+        password,
+        userID
+    );
+
+    client.release();
+    return result.rowCount != undefined && result.rowCount >= 1;
+}
