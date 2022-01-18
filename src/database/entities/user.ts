@@ -115,3 +115,15 @@ export async function UpdateUser(
     client.release();
     return result.rowCount != undefined && result.rowCount >= 1;
 }
+
+//TODO : delete all info related to this user
+export async function DeleteUser(db: Pool, userID: number): Promise<boolean> {
+    const client = await db.connect();
+    const _result = await client.queryObject(
+        "DELETE FROM users WHERE id = $1",
+        userID
+    );
+
+    client.release();
+    return true;
+}

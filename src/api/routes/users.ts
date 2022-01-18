@@ -9,6 +9,7 @@ import {
     UpdateUser,
     GetParticipationInTeams,
     GetUserAuthByID,
+    DeleteUser,
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
@@ -199,7 +200,7 @@ router.patch("/:id", async (ctx) => {
     try {
         await UpdateUser(
             ctx.app.state.pool,
-            parseInt(ctx.params.id),
+            targetedUser.id,
             newPassword,
             newAdmin
         );
@@ -209,6 +210,35 @@ router.patch("/:id", async (ctx) => {
         return SendJSONResponse(ctx, { message: "Database error" }, 500);
     }
     return SendJSONResponse(ctx, { message: "User updated" });
+});
+
+router.delete("/:id", async (ctx) => {
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("authorization")
+    );
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+    if (!user.admin || user.id == parseInt(ctx.params.id))
+        return SendJSONResponse(
+            ctx,
+            { message: "Forbidden : not admin or current user" },
+            403
+        );
+
+    const targetedUser = await GetUserAuthByID(
+        ctx.app.state.pool,
+        parseInt(ctx.params.id, 10)
+    );
+    if (!targetedUser)
+        return SendJSONResponse(ctx, { message: "Not found" }, 404);
+
+    try {
+        await DeleteUser(ctx.app.state.pool, targetedUser.id);
+    } catch (e) {
+        console.log(e);
+        return SendJSONResponse(ctx, { message: "Database error" }, 500);
+    }
+    return SendJSONResponse(ctx, { message: "User deleted" });
 });
 
 export { router as Users };
