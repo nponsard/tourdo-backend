@@ -5,6 +5,7 @@ export interface UserAuth {
     id: number;
     username: string;
     password: string;
+    admin: boolean;
 }
 
 export interface User {
@@ -58,18 +59,30 @@ export async function CreateUser(
     return result.rows[0];
 }
 
-export async function GetUserAuth(
+export async function GetUserAuthByUsername(
     db: Pool,
     username: string
 ): Promise<UserAuth> {
     const client = await db.connect();
     const result = await client.queryObject<UserAuth>(
-        "SELECT id,username,password FROM users WHERE username = $1 ",
+        "SELECT id,username,password,admin FROM users WHERE username = $1 ",
         username
     );
 
     client.release();
+    return result.rows[0];
+}
+export async function GetUserAuthByID(
+    db: Pool,
+    userID: number
+): Promise<UserAuth> {
+    const client = await db.connect();
+    const result = await client.queryObject<UserAuth>(
+        "SELECT id,username,password,admin FROM users WHERE id = $1 ",
+        userID
+    );
 
+    client.release();
     return result.rows[0];
 }
 
@@ -85,15 +98,17 @@ export async function GetParticipationInTeams(db: Pool, userID: number) {
     return result.rows;
 }
 
-export async function UpdatePassword(
+export async function UpdateUser(
     db: Pool,
     userID: number,
-    password: string
+    password: string,
+    admin: boolean
 ): Promise<boolean> {
     const client = await db.connect();
     const result = await client.queryObject(
-        "UPDATE users SET password = $1 WHERE id = $2",
+        "UPDATE users SET password = $1, admin = $2 WHERE id = $3",
         password,
+        admin,
         userID
     );
 

@@ -4,10 +4,11 @@ import { Prefix } from "../utils.ts";
 import {
     CreateUser,
     GetUserByUsername,
-    GetUserAuth,
+    GetUserAuthByUsername,
     GetUser,
-    UpdatePassword,
+    UpdateUser,
     GetParticipationInTeams,
+    GetUserAuthByID,
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
@@ -51,7 +52,7 @@ router.post("/login", async (ctx) => {
 
     // check login
 
-    const user = await GetUserAuth(ctx.app.state.pool, body.username);
+    const user = await GetUserAuthByUsername(ctx.app.state.pool, body.username);
 
     console.log(user);
 
@@ -119,16 +120,20 @@ router.patch("/me", async (ctx) => {
             400
         );
 
-    const userAuth = await GetUserAuth(ctx.app.state.pool, user.username);
+    const userAuth = await GetUserAuthByUsername(
+        ctx.app.state.pool,
+        user.username
+    );
 
     if (!(await bcrypt.compare(body.oldPassword, userAuth.password)))
         return SendJSONResponse(ctx, { message: "Wrong password" }, 400);
 
     try {
-        await UpdatePassword(
+        await UpdateUser(
             ctx.app.state.pool,
             user.id,
-            await bcrypt.hash(body.newPassword)
+            await bcrypt.hash(body.newPassword),
+            user.admin
         );
     } catch (e) {
         console.error(e);
@@ -153,6 +158,57 @@ router.get("/:id", async (ctx) => {
     if (!user) return SendJSONResponse(ctx, { message: "Not found" }, 404);
 
     return SendJSONResponse(ctx, user);
+});
+
+router.patch("/:id", async (ctx) => {
+    // check auth
+
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("authorization")
+    );
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+    if (!user.admin)
+        return SendJSONResponse(ctx, { message: "Forbidden : not admin" }, 403);
+
+    // get new info
+
+    const body = await ParseBodyJSON<{ passowrd?: string; admin?: boolean }>(
+        ctx
+    );
+
+    // get old info
+
+    const targetedUser = await GetUserAuthByID(
+        ctx.app.state.pool,
+        parseInt(ctx.params.id, 10)
+    );
+    if (!targetedUser)
+        return SendJSONResponse(ctx, { message: "Not found" }, 404);
+
+    // check data to update
+
+    let newPassword = targetedUser.password;
+    let newAdmin = targetedUser.admin;
+
+    if (body.admin !== undefined) newAdmin = body.admin;
+    if (newPassword !== undefined) newPassword = await bcrypt.hash(newPassword);
+
+    // update user
+
+    try {
+        await UpdateUser(
+            ctx.app.state.pool,
+            parseInt(ctx.params.id),
+            newPassword,
+            newAdmin
+        );
+    } catch (e) {
+        console.log(e);
+
+        return SendJSONResponse(ctx, { message: "Database error" }, 500);
+    }
+    return SendJSONResponse(ctx, { message: "User updated" });
 });
 
 export { router as Users };
