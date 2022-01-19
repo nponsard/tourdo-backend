@@ -10,7 +10,7 @@ Backend for woa tournament app
         -   [x] POST /teams
         -   [ ] GET /teams
         -   [x] GET /teams/{id}
-        -   [ ] PATCH /teams/{id}
+        -   [x] PATCH /teams/{id}
         -   [ ] DELETE /teams/{id}
         -   [ ] GET /teams/{id}/users
         -   [ ] PUT /teams/{id}/users
