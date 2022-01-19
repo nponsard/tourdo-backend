@@ -16,6 +16,9 @@ const router = new Router({ prefix: `${Prefix}/tokens` });
 router.post("/refresh", async (ctx) => {
     const request = await ParseBodyJSON<{ refreshToken: string }>(ctx);
 
+
+    console.log(request.refreshToken)
+
     const decoded = await DecodeJWT(request.refreshToken);
 
     if (!(typeof decoded.token === "string")) throw new Error("Invalid token");
