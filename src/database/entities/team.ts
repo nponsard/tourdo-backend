@@ -1,5 +1,4 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
-import { User } from "./user.ts";
 
 export enum Role {
     PLAYER = 0,
@@ -83,6 +82,10 @@ export async function DeleteTeam(db: Pool, id: number): Promise<Team> {
     const client = await db.connect();
     const result = await client.queryObject<Team>(
         "DELETE FROM teams WHERE id = $1 RETURNING *",
+        id
+    );
+    const _users = await client.queryObject<TeamMember[]>(
+        "DELETE FROM teams_composition WHERE team_id = $1 RETURNING *",
         id
     );
 

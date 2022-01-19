@@ -5,6 +5,7 @@ import { Prefix } from "../utils.ts";
 import { GetUserWithAccessToken } from "../../jwt/user.ts";
 import {
     CreateTeam,
+    DeleteTeam,
     GetTeam,
     GetTeamMembers,
     Role,
@@ -84,5 +85,40 @@ router.patch("/:id", async (ctx) => {
 
     SendJSONResponse(ctx, updatedTeam, 200);
 });
+
+
+router.delete("/:id", async (ctx) => {
+    if (ctx.params.id == undefined)
+        return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("Authorization")
+    );
+
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    const members = await GetTeamMembers(
+        ctx.app.state.pool,
+        parseInt(ctx.params.id, 10)
+    );
+    if (!members)
+        return SendJSONResponse(ctx, { message: "Team not found" }, 404);
+
+    if (
+        !user.admin &&
+        !members.some(
+            (member) => member.user_id == user.id && member.role == Role.LEADER
+        )
+    )
+        return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
+
+    const deletedTeam = await DeleteTeam(
+        ctx.app.state.pool,
+        parseInt(ctx.params.id, 10)
+    );
+
+    SendJSONResponse(ctx, deletedTeam, 200);
+})
 
 export { router as Teams };
