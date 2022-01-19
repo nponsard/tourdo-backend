@@ -3,10 +3,11 @@
 Backend for woa tournament app
 
 ## TODO :
+
 -   implement api
-    -   [x] users 
+    -   [x] users
     -   [x] tokens
-    -   [ ] tournaments 
+    -   [ ] tournaments
         -   [x] POST /teams
         -   [ ] GET /teams
         -   [x] GET /teams/{id}
@@ -16,7 +17,8 @@ Backend for woa tournament app
         -   [ ] PUT /teams/{id}/users
         -   [ ] DELETE /teams/{id}/users/{userID}
     -   [ ] teams
-    -   [ ] matches 
+    -   [ ] matches
+-   add procedures
 
 ## Deployment
 
@@ -26,7 +28,7 @@ Needs to be linked to a postgreSQL database.
 
 -   JWT_KEY : key to be used to sign JWT, use this command to generate a new key :
     ```bash
-    deno run ./src/jwt/generate.ts  
+    deno run ./src/jwt/generate.ts
     ```
 -   INIT_DB : initialize the database at start
 -   DATABASE_URL : url of the postgresql database, used before the next variables

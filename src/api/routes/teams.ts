@@ -7,6 +7,7 @@ import {
     CreateTeam,
     GetTeam,
     GetTeamMembers,
+    Role,
     UpdateTeam,
 } from "../../database/entities/team.ts";
 
@@ -66,8 +67,13 @@ router.patch("/:id", async (ctx) => {
     if (!members)
         return SendJSONResponse(ctx, { message: "Team not found" }, 404);
 
-    if (!user.admin && !members.some((member) => member.id == user.id))
-        return SendJSONResponse(ctx, { message: "Forbidden" }, 403);
+    if (
+        !user.admin &&
+        !members.some(
+            (member) => member.user_id == user.id && member.role == Role.LEADER
+        )
+    )
+        return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
     const updatedTeam = await UpdateTeam(
         ctx.app.state.pool,

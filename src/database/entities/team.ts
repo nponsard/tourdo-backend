@@ -14,6 +14,11 @@ export interface Team {
     match_count: number;
     win_count: number;
 }
+export interface TeamMember {
+    user_id: number;
+    team_id: number;
+    role: Role;
+}
 
 export async function GetTeam(db: Pool, id: number): Promise<Team> {
     const client = await db.connect();
@@ -88,13 +93,13 @@ export async function DeleteTeam(db: Pool, id: number): Promise<Team> {
 
 export async function GetTeamMembers(
     db: Pool,
-    teamId: number
-): Promise<User[]> {
+    team_id: number
+): Promise<TeamMember[]> {
     const client = await db.connect();
 
-    const result = await client.queryObject<User>(
-        "SELECT * FROM users WHERE id IN (SELECT user_id FROM teams_composition WHERE team_id = $1)",
-        teamId
+    const result = await client.queryObject<TeamMember>(
+        "SELECT user_id,team_id,role FROM teams_composition WHERE team_id = $1",
+        team_id
     );
 
     client.release();
