@@ -4,7 +4,7 @@ import {
 } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
 export default function Connect(param: ClientOptions | string) {
-    return new Pool(param, 40, true);
+    return new Pool(param, 100, true);
 }
 
 // connect to database with defaults/env vars
