@@ -43,6 +43,36 @@ export async function CreateTeam(
     return result.rows[0];
 }
 
+export async function UpdateTeam(
+    db: Pool,
+    id: number,
+    name: string,
+    description: string
+): Promise<Team> {
+    const client = await db.connect();
+    const result = await client.queryObject<Team>(
+        "UPDATE teams SET name = $1, description = $2 WHERE id = $3 RETURNING *",
+        name, description, id
+    );
+
+    client.release();
+
+    return result.rows[0];
+}
+
+export async function DeleteTeam(db: Pool, id: number): Promise<Team> {
+    const client = await db.connect();
+    const result = await client.queryObject<Team>(
+        "DELETE FROM teams WHERE id = $1 RETURNING *",
+        id
+    );
+
+    client.release();
+
+    return result.rows[0];
+}
+
+
 export async function GetTeamMembers(
     db: Pool,
     teamId: number
@@ -69,6 +99,35 @@ export async function AddTeamMember(
     await client.queryObject(
         "INSERT INTO teams_composition (team_id, user_id, role) VALUES ($1, $2, $3)",
         teamId, userId, role
+    );
+
+    client.release();
+}
+
+export async function RemoveTeamMember(
+    db: Pool,
+    teamId: number,
+    userId: number
+): Promise<void> {
+    const client = await db.connect();
+    await client.queryObject(
+        "DELETE FROM teams_composition WHERE team_id = $1 AND user_id = $2",
+        teamId, userId
+    );
+
+    client.release();
+}
+
+export async function UpdateTeamMemberRole(
+    db: Pool,
+    teamId: number,
+    userId: number,
+    role: Role
+): Promise<void> {
+    const client = await db.connect();
+    await client.queryObject(
+        "UPDATE teams_composition SET role = $1 WHERE team_id = $2 AND user_id = $3",
+        role, teamId, userId
     );
 
     client.release();
