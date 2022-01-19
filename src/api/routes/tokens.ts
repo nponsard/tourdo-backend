@@ -14,12 +14,9 @@ import { NewTokenPair } from "../../jwt/tokens.ts";
 const router = new Router({ prefix: `${Prefix}/tokens` });
 
 router.post("/refresh", async (ctx) => {
-    const request = await ParseBodyJSON<{ refreshToken: string }>(ctx);
+    const request = await ParseBodyJSON<{ refresh_token: string }>(ctx);
 
-
-    console.log(request.refreshToken)
-
-    const decoded = await DecodeJWT(request.refreshToken);
+    const decoded = await DecodeJWT(request.refresh_token);
 
     if (!(typeof decoded.token === "string")) throw new Error("Invalid token");
 
@@ -52,8 +49,6 @@ router.post("/refresh", async (ctx) => {
         new Date(Date.now() + 3600 * 1000 * 24 * 30)
     );
 
-
-
     // critical section, we must not delete the old token in case of a crash, but failing to delete the old token must not crash the request
 
     try {
@@ -61,7 +56,6 @@ router.post("/refresh", async (ctx) => {
             accessToken: newTokens.accessJWT,
             refreshToken: newTokens.refreshJWT,
         });
-
 
         try {
             await DeleteToken(ctx.app.state.pool, tokens.id);
