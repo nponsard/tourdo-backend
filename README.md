@@ -14,7 +14,7 @@ Backend for woa tournament app
         -   [x] PATCH /teams/{id}
         -   [x] DELETE /teams/{id}
         -   [x] GET /teams/{id}/users
-        -   [ ] PUT /teams/{id}/users
+        -   [x] PUT /teams/{id}/users
         -   [ ] DELETE /teams/{id}/users/{userID}
     -   [ ] teams
     -   [ ] matches

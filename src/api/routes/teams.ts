@@ -4,6 +4,7 @@ import { Prefix } from "../utils.ts";
 
 import { GetUserWithAccessToken } from "../../jwt/user.ts";
 import {
+    AddTeamMember,
     CreateTeam,
     DeleteTeam,
     GetTeam,
@@ -138,6 +139,47 @@ router.get("/:id/users", async (ctx) => {
         return SendJSONResponse(ctx, { message: "Team not found" }, 404);
 
     return SendJSONResponse(ctx, members, 200);
+});
+
+router.put("/:id/users", async (ctx) => {
+    const team_id = parseInt(ctx.params.id, 10);
+
+    if (isNaN(team_id))
+        return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("Authorization")
+    );
+
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    const members = await GetTeamMembers(
+        ctx.app.state.pool,
+        parseInt(ctx.params.id, 10)
+    );
+    if (!members)
+        return SendJSONResponse(ctx, { message: "Team not found" }, 404);
+
+    if (
+        !user.admin &&
+        !members.some(
+            (member) => member.user_id == user.id && member.role == Role.LEADER
+        )
+    )
+        return SendJSONResponse(
+            ctx,
+            { message: "Forbidden, must be leader or admin" },
+            403
+        );
+
+    const body = await ParseBodyJSON<{ id: number; role: Role }>(ctx);
+
+    // si on doit l’ajouter
+    if (!members.some((member) => member.user_id == body.id))
+        await AddTeamMember(ctx.app.state.pool, team_id, body.id, body.role);
+
+    return SendJSONResponse(ctx, { message: "OK" }, 200);
 });
 
 export { router as Teams };
