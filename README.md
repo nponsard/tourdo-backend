@@ -6,6 +6,7 @@ Backend for woa tournament app
 
 -   implement api
     -   [x] users
+        -   [ ] SEARCH user
     -   [x] tokens
     -   [ ] teams
         -   [x] POST /teams
@@ -17,7 +18,18 @@ Backend for woa tournament app
         -   [x] PUT /teams/{id}/users
         -   [x] DELETE /teams/{id}/users/{userID}
     -   [ ] tournaments
+        -   [ ] GET /tournaments
+        -   [ ] POST /tournaments
+        -   [ ] GET /tournaments/{id}
+        -   [ ] DELETE /tournaments/{id}
+        -   [ ] PATCH /tournaments/{id}
+        -   [ ] BEGIN TOURNAMENT
     -   [ ] matches
+        -   [ ] GET /matches
+        -   [ ] POST /matches
+        -   [ ] GET /matches/{id}
+        -   [ ] DELETE /matches/{id}
+        -   [ ] PATCH /matches/{id}
 -   add procedures
 
 ## Deployment
