@@ -9,6 +9,7 @@ import {
     DeleteTeam,
     GetTeam,
     GetTeamMembers,
+    RemoveTeamMember,
     Role,
     UpdateTeam,
 } from "../../database/entities/team.ts";
@@ -180,6 +181,50 @@ router.put("/:id/users", async (ctx) => {
         await AddTeamMember(ctx.app.state.pool, team_id, body.id, body.role);
 
     return SendJSONResponse(ctx, { message: "OK" }, 200);
+});
+
+router.delete("/:id/users/:user_id", async (ctx) => {
+    const team_id = parseInt(ctx.params.id, 10);
+    const user_id = parseInt(ctx.params.user_id, 10);
+
+    if (isNaN(team_id) || isNaN(user_id))
+        return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("Authorization")
+    );
+
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    const members = await GetTeamMembers(
+        ctx.app.state.pool,
+        parseInt(ctx.params.id, 10)
+    );
+    if (!members)
+        return SendJSONResponse(ctx, { message: "Team not found" }, 404);
+
+    // The user doing the requestg must be the leader of the team, an admin or the user to delete
+    if (
+        !user.admin &&
+        !members.some(
+            (member) => member.user_id == user.id && member.role == Role.LEADER
+        ) &&
+        user.id != user_id
+    )
+        return SendJSONResponse(
+            ctx,
+            { message: "Forbidden, must be leader or admin" },
+            403
+        );
+
+    const _deletedTeamMember = await RemoveTeamMember(
+        ctx.app.state.pool,
+        team_id,
+        user_id
+    );
+
+    return SendJSONResponse(ctx, { message: "Team member deleted" }, 200);
 });
 
 export { router as Teams };

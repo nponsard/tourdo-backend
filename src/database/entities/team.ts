@@ -128,14 +128,14 @@ export async function AddTeamMember(
 
 export async function RemoveTeamMember(
     db: Pool,
-    teamId: number,
-    userId: number
+    team_id: number,
+    user_id: number
 ): Promise<void> {
     const client = await db.connect();
     await client.queryObject(
         "DELETE FROM teams_composition WHERE team_id = $1 AND user_id = $2",
-        teamId,
-        userId
+        team_id,
+        user_id
     );
 
     client.release();
