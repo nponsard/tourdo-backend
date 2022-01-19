@@ -3,9 +3,20 @@
 Backend for woa tournament app
 
 ## TODO :
-
--   finish api definition
 -   implement api
+    -   [x] users 
+    -   [x] tokens
+    -   [ ] tournaments 
+        -   [ ] POST /teams
+        -   [ ] GET /teams
+        -   [ ] GET /teams/{id}
+        -   [ ] PATCH /teams/{id}
+        -   [ ] DELETE /teams/{id}
+        -   [ ] GET /teams/{id}/users
+        -   [ ] PUT /teams/{id}/users
+        -   [ ] DELETE /teams/{id}/users/{userID}
+    -   [ ] teams
+    -   [ ] matches 
 
 ## Deployment
 
