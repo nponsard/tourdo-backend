@@ -20,9 +20,9 @@ Backend for woa tournament app
     -   [ ] tournaments
         -   [ ] GET /tournaments
         -   [x] POST /tournaments
-        -   [ ] GET /tournaments/{id}
-        -   [ ] DELETE /tournaments/{id}
-        -   [ ] PATCH /tournaments/{id}
+        -   [x] GET /tournaments/{id}
+        -   [x] DELETE /tournaments/{id}
+        -   [x] PATCH /tournaments/{id}
         -   [ ] BEGIN TOURNAMENT
     -   [ ] matches
         -   [ ] GET /matches
@@ -31,6 +31,14 @@ Backend for woa tournament app
         -   [ ] DELETE /matches/{id}
         -   [ ] PATCH /matches/{id}
 -   add procedures
+-   add functionalities : 
+    -   add team to tournament (organizer only)
+    -   team can leave tournament (organizer || team leader)
+    -   add other organizers to the tournament
+    -   start of the tournament : create matches
+    -   edit team numbers on tournament (order of appearance)
+    -   search tables
+    -   list with paging all tables
 
 ## Deployment
 
