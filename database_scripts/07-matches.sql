@@ -14,10 +14,8 @@ create table if not exists matches
     tournament_id integer not null
         constraint matches_tournament_id_fk
             references tournaments,
-    winner_id     int
-        constraint matches_winner_id_fk
-            references teams,
-    date          date
+    status     int,
+    date          timestamp
 );
 
 create unique index if not exists matches_id_uindex
