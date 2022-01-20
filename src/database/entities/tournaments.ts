@@ -1,4 +1,6 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/pool.ts";
+import { Match } from "./matches.ts";
+import { Team } from "./team.ts";
 
 export enum TournamentType {
     None = 0,
@@ -109,4 +111,81 @@ export async function DeleteTournament(pool: Pool, id: number): Promise<Tourname
 
     client.release();
     return result.rows[0];
+}
+
+export async function GetTournamentTeams(pool: Pool, id: number): Promise<Team[]> {
+    const client = await pool.connect();
+    const result = await client.queryObject<Team>(
+        `SELECT teams.* FROM teams JOIN tournaments_participants ON teams.id = tournaments_participants.team_id WHERE tournaments_participants.tournament_id = $1`,
+        id
+    );
+
+    client.release();
+    return result.rows;
+}
+
+export async function GetTournamentMatches(pool: Pool, id: number): Promise<Match[]> {
+    const client = await pool.connect();
+    const result = await client.queryObject<Match>(
+        `SELECT matches.* FROM matches WHERE matches.tournament_id = $1`,
+        id
+    );
+
+    client.release();
+    return result.rows;
+}
+
+export async function GetTournamentMatchesWithTeamId(pool: Pool,  tournament_id :number, team_id: number): Promise<Match[]> {
+    const client = await pool.connect();
+    const result = await client.queryObject<Match>(
+        `SELECT matches.* FROM matches matches.tournament_id = $1 AND (matches.team1_id = $2 OR matches.team2_id = $2)`,
+        tournament_id,
+        team_id
+    );
+
+    client.release();
+    return result.rows;
+}
+
+export async function AddTournamentTeam(
+    pool: Pool,
+    tournament_id: number,
+    team_id: number,
+): Promise<void> {
+    const client = await pool.connect();
+    await client.queryObject(
+        `INSERT INTO tournaments_participants(tournament_id, team_id) VALUES($1,$2)`,
+        tournament_id,
+        team_id
+    );
+
+    client.release();
+}
+
+
+export async function RemoveTournamentTeam(
+    pool: Pool,
+    tournament_id: number,
+    team_id: number,
+): Promise<void> {
+    const client = await pool.connect();
+    await client.queryObject(
+        `DELETE FROM tournaments_participants WHERE tournament_id = $1 AND team_id = $2`,
+        tournament_id,
+        team_id
+    );
+
+    client.release();
+}
+
+export  async function ChangeTeamNumber(pool: Pool, tournament_id: number, team_id: number, team_number: number): Promise<void> {
+    const client = await pool.connect();
+    await client.queryObject(
+        `UPDATE tournaments_participants SET team_number = $1 WHERE tournament_id = $2 AND team_id = $3`,
+        team_number,
+        tournament_id,
+        team_id
+    );
+
+    client.release();
 }
