@@ -1,6 +1,7 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/pool.ts";
 import { Match } from "./matches.ts";
 import { Team } from "./team.ts";
+import { User } from "./user.ts";
 
 export enum TournamentType {
     None = 0,
@@ -135,7 +136,11 @@ export async function GetTournamentMatches(pool: Pool, id: number): Promise<Matc
     return result.rows;
 }
 
-export async function GetTournamentMatchesWithTeamId(pool: Pool,  tournament_id :number, team_id: number): Promise<Match[]> {
+export async function GetTournamentMatchesWithTeamId(
+    pool: Pool,
+    tournament_id: number,
+    team_id: number
+): Promise<Match[]> {
     const client = await pool.connect();
     const result = await client.queryObject<Match>(
         `SELECT matches.* FROM matches matches.tournament_id = $1 AND (matches.team1_id = $2 OR matches.team2_id = $2)`,
@@ -150,7 +155,7 @@ export async function GetTournamentMatchesWithTeamId(pool: Pool,  tournament_id 
 export async function AddTournamentTeam(
     pool: Pool,
     tournament_id: number,
-    team_id: number,
+    team_id: number
 ): Promise<void> {
     const client = await pool.connect();
     await client.queryObject(
@@ -162,11 +167,10 @@ export async function AddTournamentTeam(
     client.release();
 }
 
-
 export async function RemoveTournamentTeam(
     pool: Pool,
     tournament_id: number,
-    team_id: number,
+    team_id: number
 ): Promise<void> {
     const client = await pool.connect();
     await client.queryObject(
@@ -178,7 +182,12 @@ export async function RemoveTournamentTeam(
     client.release();
 }
 
-export  async function ChangeTeamNumber(pool: Pool, tournament_id: number, team_id: number, team_number: number): Promise<void> {
+export async function ChangeTeamNumber(
+    pool: Pool,
+    tournament_id: number,
+    team_id: number,
+    team_number: number
+): Promise<void> {
     const client = await pool.connect();
     await client.queryObject(
         `UPDATE tournaments_participants SET team_number = $1 WHERE tournament_id = $2 AND team_id = $3`,
@@ -188,4 +197,58 @@ export  async function ChangeTeamNumber(pool: Pool, tournament_id: number, team_
     );
 
     client.release();
+}
+
+export async function AddOrganizer(
+    pool: Pool,
+    tournament_id: number,
+    user_id: number
+): Promise<{ tournament_id: number; user_id: number }> {
+    const client = await pool.connect();
+    const response = await client.queryObject<{ tournament_id: number; user_id: number }>(
+        `INSERT INTO tournaments_organizers(tournament_id, user_id) VALUES($1,$2) RETURNING tournament_id, user_id`,
+        tournament_id,
+        user_id
+    );
+
+    client.release();
+    return response.rows[0];
+}
+
+export async function RemoveOrganizer(
+    pool: Pool,
+    tournament_id: number,
+    user_id: number
+): Promise<{ tournament_id: number; user_id: number }> {
+    const client = await pool.connect();
+    const response = await client.queryObject<{ tournament_id: number; user_id: number }>(
+        `DELETE FROM tournaments_organizers WHERE tournament_id = $1 AND user_id = $2 RETURNING tournament_id, user_id`,
+        tournament_id,
+        user_id
+    );
+
+    client.release();
+    return response.rows[0];
+}
+
+export async function GetTournamentOrganizers(pool: Pool, tournament_id: number): Promise<User[]> {
+    const client = await pool.connect();
+    const result = await client.queryObject<User>(
+        `SELECT users.* FROM users JOIN tournaments_organizers ON users.id = tournaments_organizers.user_id WHERE tournaments_organizers.tournament_id = $1`,
+        tournament_id
+    );
+
+    client.release();
+    return result.rows;
+}
+
+export async function GetTournamentsOrganizedByUser(pool: Pool, user_id: number): Promise<Tournament[]> {
+    const client = await pool.connect();
+    const result = await client.queryObject<Tournament>(
+        `SELECT tournaments.* FROM tournaments JOIN tournaments_organizers ON tournaments.id = tournaments_organizers.tournament_id WHERE tournaments_organizers.user_id = $1`,
+        user_id
+    );
+
+    client.release();
+    return result.rows;
 }
