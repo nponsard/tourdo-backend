@@ -19,7 +19,7 @@ Backend for woa tournament app
         -   [x] DELETE /teams/{id}/users/{userID}
     -   [ ] tournaments
         -   [ ] GET /tournaments
-        -   [ ] POST /tournaments
+        -   [x] POST /tournaments
         -   [ ] GET /tournaments/{id}
         -   [ ] DELETE /tournaments/{id}
         -   [ ] PATCH /tournaments/{id}

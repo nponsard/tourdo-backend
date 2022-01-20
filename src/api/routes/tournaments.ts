@@ -3,7 +3,11 @@ import { SendJSONResponse, ParseBodyJSON } from "../utils.ts";
 import { Prefix } from "../utils.ts";
 
 import { GetUserWithAccessToken } from "../../jwt/user.ts";
-import { CreateTournament } from "../../database/entities/tournaments.ts";
+import {
+    AddOrganizer,
+    CreateTournament,
+    DeleteTournament,
+} from "../../database/entities/tournaments.ts";
 
 const router = new Router({ prefix: `${Prefix}/tournaments` });
 
@@ -36,11 +40,24 @@ router.post("/", async (ctx) => {
         body.game_name
     );
 
+    try {
+        const _organizer = AddOrganizer(ctx.app.state.pool, tournament.id, user.id);
+    } catch (e) {
+        // prevent a tournament from being created without an organizer
 
+        await DeleteTournament(ctx.app.state.pool, tournament.id);
 
-    
+        console.error("Error when adding organizer : ", e);
+
+        return SendJSONResponse(ctx, { message: "Failed to create tournament" }, 500);
+    }
 
     SendJSONResponse(ctx, tournament, 201);
 });
+
+
+
+
+
 
 export { router as Tournaments };
