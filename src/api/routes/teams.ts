@@ -188,14 +188,14 @@ router.get("/", async (ctx) => {
     } else {
         teams = await SearchTeams(ctx.app.state.pool, search, limit, offset);
     }
-    let count = -1;
+    let total = -1;
     try {
-        count = await GetTeamsCount(ctx.app.state.pool);
+        total = await GetTeamsCount(ctx.app.state.pool);
     } catch (e) {
         console.log(e);
     }
 
-    return SendJSONResponse(ctx, { teams, count });
+    return SendJSONResponse(ctx, { teams, total });
 });
 
 export { router as Teams };

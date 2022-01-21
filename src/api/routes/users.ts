@@ -245,15 +245,15 @@ router.get("/", async (ctx) => {
         users = await SearchUsers(ctx.app.state.pool, search, limit, offset);
     }
 
-    let count = -1;
+    let total = -1;
     try {
-        count = await GetUsersCount(ctx.app.state.pool);
+        total = await GetUsersCount(ctx.app.state.pool);
     } catch (e) {
         console.log(e);
     }
-    console.log(users, count);
+    console.log(users, total);
 
-    return SendJSONResponse(ctx, { users, count });
+    return SendJSONResponse(ctx, { users, total });
 });
 
 export { router as Users };

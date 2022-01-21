@@ -173,14 +173,14 @@ router.get("/", async (ctx) => {
         users = await SearchTournaments(ctx.app.state.pool, search, limit, offset);
     }
 
-    let count = -1;
+    let total = -1;
     try {
-        count = await GetTournamentsCount(ctx.app.state.pool);
+        total = await GetTournamentsCount(ctx.app.state.pool);
     } catch (e) {
         console.log(e);
     }
 
-    return SendJSONResponse(ctx, { users, count });
+    return SendJSONResponse(ctx, { users, total });
 });
 
 export { router as Tournaments };
