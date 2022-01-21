@@ -95,10 +95,10 @@ export async function SearchTournaments(
 }
 export async function GetTournamentsCount(pool: Pool): Promise<number> {
     const client = await pool.connect();
-    const result = await client.queryObject<{ count: number }>(`SELECT count(*) FROM tournaments`);
+    const result = await client.queryObject<{ count: BigInt }>(`SELECT count(*) FROM tournaments`);
 
     client.release();
-    return result.rows[0].count;
+    return Number(result.rows[0].count); // we may hit a limit of 1.7976931348623157e+308, but it’s far enough
 }
 
 export async function UpdateTournament(

@@ -126,10 +126,10 @@ export async function GetUsers(db: Pool, limit: number, offset: number): Promise
 
 export async function GetUsersCount(db: Pool): Promise<number> {
     const client = await db.connect();
-    const result = await client.queryObject<{ count: number }>("SELECT count(*) FROM users");
+    const result = await client.queryObject<{ count: BigInt }>("SELECT count(*) FROM users");
 
     client.release();
-    return result.rows[0]["count"];
+    return Number(result.rows[0]["count"]);
 }
 
 export async function SearchUsers(

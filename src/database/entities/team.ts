@@ -22,21 +22,13 @@ export interface TeamMember {
 export async function GetTeam(db: Pool, id: number): Promise<Team> {
     const client = await db.connect();
 
-    const result = await client.queryObject<Team>(
-        "SELECT * FROM teams WHERE id = $1",
-        id
-    );
+    const result = await client.queryObject<Team>("SELECT * FROM teams WHERE id = $1", id);
 
     client.release();
     return result.rows[0] as Team;
 }
 
-export async function CreateTeam(
-    db: Pool,
-    name: string,
-    description: string,
-    userID: number
-) {
+export async function CreateTeam(db: Pool, name: string, description: string, userID: number) {
     const client = await db.connect();
     const transaction = client.createTransaction("team_transaction");
 
@@ -94,10 +86,7 @@ export async function DeleteTeam(db: Pool, id: number): Promise<Team> {
     return result.rows[0];
 }
 
-export async function GetTeamMembers(
-    db: Pool,
-    team_id: number
-): Promise<TeamMember[]> {
+export async function GetTeamMembers(db: Pool, team_id: number): Promise<TeamMember[]> {
     const client = await db.connect();
 
     const result = await client.queryObject<TeamMember>(
@@ -126,11 +115,7 @@ export async function AddTeamMember(
     client.release();
 }
 
-export async function RemoveTeamMember(
-    db: Pool,
-    team_id: number,
-    user_id: number
-): Promise<void> {
+export async function RemoveTeamMember(db: Pool, team_id: number, user_id: number): Promise<void> {
     const client = await db.connect();
     await client.queryObject(
         "DELETE FROM teams_composition WHERE team_id = $1 AND user_id = $2",
@@ -158,8 +143,7 @@ export async function UpdateTeamMemberRole(
     client.release();
 }
 
-
-export async function GetTeams(db:Pool, limit:number, offset:number): Promise<Team[]> {
+export async function GetTeams(db: Pool, limit: number, offset: number): Promise<Team[]> {
     const client = await db.connect();
 
     const result = await client.queryObject<Team>(
@@ -172,18 +156,21 @@ export async function GetTeams(db:Pool, limit:number, offset:number): Promise<Te
     return result.rows;
 }
 
-export async function GetTeamsCount(db:Pool): Promise<number> {
+export async function GetTeamsCount(db: Pool): Promise<number> {
     const client = await db.connect();
 
-    const result = await client.queryObject<{count:number}>(
-        "SELECT COUNT(*) FROM teams"
-    );
+    const result = await client.queryObject<{ count: BigInt }>("SELECT COUNT(*) FROM teams");
 
     client.release();
-    return result.rows[0].count;
+    return Number(result.rows[0].count);
 }
 
-export async function SearchTeams(db:Pool, search:string, limit:number, offset:number): Promise<Team[]> {
+export async function SearchTeams(
+    db: Pool,
+    search: string,
+    limit: number,
+    offset: number
+): Promise<Team[]> {
     const client = await db.connect();
 
     const result = await client.queryObject<Team>(

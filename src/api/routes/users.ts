@@ -251,6 +251,7 @@ router.get("/", async (ctx) => {
     } catch (e) {
         console.log(e);
     }
+    console.log(users, count);
 
     return SendJSONResponse(ctx, { users, count });
 });
