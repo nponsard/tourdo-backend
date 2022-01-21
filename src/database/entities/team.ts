@@ -157,3 +157,42 @@ export async function UpdateTeamMemberRole(
 
     client.release();
 }
+
+
+export async function GetTeams(db:Pool, limit:number, offset:number): Promise<Team[]> {
+    const client = await db.connect();
+
+    const result = await client.queryObject<Team>(
+        "SELECT * FROM teams LIMIT $1 OFFSET $2",
+        limit,
+        offset
+    );
+
+    client.release();
+    return result.rows;
+}
+
+export async function GetTeamCount(db:Pool): Promise<number> {
+    const client = await db.connect();
+
+    const result = await client.queryObject<number>(
+        "SELECT COUNT(*) FROM teams"
+    );
+
+    client.release();
+    return result.rows[0];
+}
+
+export async function SearchTeams(db:Pool, search:string, limit:number, offset:number): Promise<Team[]> {
+    const client = await db.connect();
+
+    const result = await client.queryObject<Team>(
+        "SELECT * FROM teams WHERE name LIKE '%'+$1+'%' LIMIT $2 OFFSET $3",
+        search,
+        limit,
+        offset
+    );
+
+    client.release();
+    return result.rows;
+}

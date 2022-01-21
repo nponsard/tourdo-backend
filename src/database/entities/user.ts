@@ -14,10 +14,7 @@ export interface User {
     admin: boolean;
 }
 
-export async function GetUserByUsername(
-    pool: Pool,
-    username: string
-): Promise<User | undefined> {
+export async function GetUserByUsername(pool: Pool, username: string): Promise<User | undefined> {
     console.log(pool);
     const client = await pool.connect();
 
@@ -42,11 +39,7 @@ export async function GetUser(db: Pool, id: number): Promise<User | undefined> {
     return result.rows[0];
 }
 
-export async function CreateUser(
-    db: Pool,
-    username: string,
-    password: string
-): Promise<User> {
+export async function CreateUser(db: Pool, username: string, password: string): Promise<User> {
     const client = await db.connect();
     const result = await client.queryObject<User>(
         "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id,username, admin",
@@ -59,10 +52,7 @@ export async function CreateUser(
     return result.rows[0];
 }
 
-export async function GetUserAuthByUsername(
-    db: Pool,
-    username: string
-): Promise<UserAuth> {
+export async function GetUserAuthByUsername(db: Pool, username: string): Promise<UserAuth> {
     const client = await db.connect();
     const result = await client.queryObject<UserAuth>(
         "SELECT id,username,password,admin FROM users WHERE username = $1 ",
@@ -72,10 +62,7 @@ export async function GetUserAuthByUsername(
     client.release();
     return result.rows[0];
 }
-export async function GetUserAuthByID(
-    db: Pool,
-    userID: number
-): Promise<UserAuth> {
+export async function GetUserAuthByID(db: Pool, userID: number): Promise<UserAuth> {
     const client = await db.connect();
     const result = await client.queryObject<UserAuth>(
         "SELECT id,username,password,admin FROM users WHERE id = $1 ",
@@ -119,11 +106,46 @@ export async function UpdateUser(
 //TODO : delete all info related to this user
 export async function DeleteUser(db: Pool, userID: number): Promise<boolean> {
     const client = await db.connect();
-    const _result = await client.queryObject(
-        "DELETE FROM users WHERE id = $1",
-        userID
-    );
+    const _result = await client.queryObject("DELETE FROM users WHERE id = $1", userID);
 
     client.release();
     return true;
+}
+
+export async function GetUsers(db: Pool, limit: number, offset: number): Promise<User[]> {
+    const client = await db.connect();
+    const result = await client.queryObject<User>(
+        "SELECT id,username, admin FROM users LIMIT $1 OFFSET $2",
+        limit,
+        offset
+    );
+
+    client.release();
+    return result.rows;
+}
+
+export async function GetUsersCount(db: Pool): Promise<number> {
+    const client = await db.connect();
+    const result = await client.queryObject<{ count: number }>("SELECT count(*) FROM users");
+
+    client.release();
+    return result.rows[0]["count"];
+}
+
+export async function SearchUsers(
+    db: Pool,
+    search: string,
+    limit: number,
+    offset: number
+): Promise<User[]> {
+    const client = await db.connect();
+    const result = await client.queryObject<User>(
+        "SELECT id,username, admin FROM users WHERE username LIKE '%' + $1 + '%' LIMIT $2 OFFSET $3",
+        search,
+        limit,
+        offset
+    );
+
+    client.release();
+    return result.rows;
 }

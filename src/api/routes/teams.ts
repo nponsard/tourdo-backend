@@ -9,10 +9,14 @@ import {
     DeleteTeam,
     GetTeam,
     GetTeamMembers,
+    GetTeams,
     RemoveTeamMember,
     Role,
+    SearchTeams,
+    Team,
     UpdateTeam,
 } from "../../database/entities/team.ts";
+import { getQuery } from "https://deno.land/x/oak@v10.1.0/helpers.ts";
 
 const router = new Router({ prefix: `${Prefix}/teams` });
 
@@ -24,23 +28,15 @@ router.post("/", async (ctx) => {
 
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
-    const body = await ParseBodyJSON<{ name: string; description: string }>(
-        ctx
-    );
+    const body = await ParseBodyJSON<{ name: string; description: string }>(ctx);
 
-    const team = await CreateTeam(
-        ctx.app.state.pool,
-        body.name,
-        body.description,
-        user.id
-    );
+    const team = await CreateTeam(ctx.app.state.pool, body.name, body.description, user.id);
 
     SendJSONResponse(ctx, team, 201);
 });
 
 router.get("/:id", async (ctx) => {
-    if (ctx.params.id == undefined)
-        return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+    if (ctx.params.id == undefined) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const team = await GetTeam(ctx.app.state.pool, parseInt(ctx.params.id, 10));
     if (!team) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
@@ -49,8 +45,7 @@ router.get("/:id", async (ctx) => {
 });
 
 router.patch("/:id", async (ctx) => {
-    if (ctx.params.id == undefined)
-        return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+    if (ctx.params.id == undefined) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const user = await GetUserWithAccessToken(
         ctx.app.state.pool,
@@ -59,28 +54,16 @@ router.patch("/:id", async (ctx) => {
 
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
-    const body = await ParseBodyJSON<{ name: string; description: string }>(
-        ctx
-    );
+    const body = await ParseBodyJSON<{ name: string; description: string }>(ctx);
 
-    const members = await GetTeamMembers(
-        ctx.app.state.pool,
-        parseInt(ctx.params.id, 10)
-    );
-    if (!members)
-        return SendJSONResponse(ctx, { message: "Team not found" }, 404);
+    const members = await GetTeamMembers(ctx.app.state.pool, parseInt(ctx.params.id, 10));
+    if (!members) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
 
     if (
         !user.admin &&
-        !members.some(
-            (member) => member.user_id == user.id && member.role == Role.LEADER
-        )
+        !members.some((member) => member.user_id == user.id && member.role == Role.LEADER)
     )
-        return SendJSONResponse(
-            ctx,
-            { message: "Forbidden, must be leader or admin" },
-            403
-        );
+        return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
     const updatedTeam = await UpdateTeam(
         ctx.app.state.pool,
@@ -93,8 +76,7 @@ router.patch("/:id", async (ctx) => {
 });
 
 router.delete("/:id", async (ctx) => {
-    if (ctx.params.id == undefined)
-        return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+    if (ctx.params.id == undefined) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const user = await GetUserWithAccessToken(
         ctx.app.state.pool,
@@ -103,29 +85,16 @@ router.delete("/:id", async (ctx) => {
 
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
-    const members = await GetTeamMembers(
-        ctx.app.state.pool,
-        parseInt(ctx.params.id, 10)
-    );
-    if (!members)
-        return SendJSONResponse(ctx, { message: "Team not found" }, 404);
+    const members = await GetTeamMembers(ctx.app.state.pool, parseInt(ctx.params.id, 10));
+    if (!members) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
 
     if (
         !user.admin &&
-        !members.some(
-            (member) => member.user_id == user.id && member.role == Role.LEADER
-        )
+        !members.some((member) => member.user_id == user.id && member.role == Role.LEADER)
     )
-        return SendJSONResponse(
-            ctx,
-            { message: "Forbidden, must be leader or admin" },
-            403
-        );
+        return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
-    const deletedTeam = await DeleteTeam(
-        ctx.app.state.pool,
-        parseInt(ctx.params.id, 10)
-    );
+    const deletedTeam = await DeleteTeam(ctx.app.state.pool, parseInt(ctx.params.id, 10));
 
     SendJSONResponse(ctx, deletedTeam, 200);
 });
@@ -136,8 +105,7 @@ router.get("/:id/users", async (ctx) => {
     if (isNaN(id)) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const members = await GetTeamMembers(ctx.app.state.pool, id);
-    if (!members)
-        return SendJSONResponse(ctx, { message: "Team not found" }, 404);
+    if (!members) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
 
     return SendJSONResponse(ctx, members, 200);
 });
@@ -145,8 +113,7 @@ router.get("/:id/users", async (ctx) => {
 router.put("/:id/users", async (ctx) => {
     const team_id = parseInt(ctx.params.id, 10);
 
-    if (isNaN(team_id))
-        return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+    if (isNaN(team_id)) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const user = await GetUserWithAccessToken(
         ctx.app.state.pool,
@@ -155,24 +122,14 @@ router.put("/:id/users", async (ctx) => {
 
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
-    const members = await GetTeamMembers(
-        ctx.app.state.pool,
-        parseInt(ctx.params.id, 10)
-    );
-    if (!members)
-        return SendJSONResponse(ctx, { message: "Team not found" }, 404);
+    const members = await GetTeamMembers(ctx.app.state.pool, parseInt(ctx.params.id, 10));
+    if (!members) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
 
     if (
         !user.admin &&
-        !members.some(
-            (member) => member.user_id == user.id && member.role == Role.LEADER
-        )
+        !members.some((member) => member.user_id == user.id && member.role == Role.LEADER)
     )
-        return SendJSONResponse(
-            ctx,
-            { message: "Forbidden, must be leader or admin" },
-            403
-        );
+        return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
     const body = await ParseBodyJSON<{ id: number; role: Role }>(ctx);
 
@@ -197,34 +154,41 @@ router.delete("/:id/users/:user_id", async (ctx) => {
 
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
-    const members = await GetTeamMembers(
-        ctx.app.state.pool,
-        parseInt(ctx.params.id, 10)
-    );
-    if (!members)
-        return SendJSONResponse(ctx, { message: "Team not found" }, 404);
+    const members = await GetTeamMembers(ctx.app.state.pool, parseInt(ctx.params.id, 10));
+    if (!members) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
 
     // The user doing the requestg must be the leader of the team, an admin or the user to delete
     if (
         !user.admin &&
-        !members.some(
-            (member) => member.user_id == user.id && member.role == Role.LEADER
-        ) &&
+        !members.some((member) => member.user_id == user.id && member.role == Role.LEADER) &&
         user.id != user_id
     )
-        return SendJSONResponse(
-            ctx,
-            { message: "Forbidden, must be leader or admin" },
-            403
-        );
+        return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
-    const _deletedTeamMember = await RemoveTeamMember(
-        ctx.app.state.pool,
-        team_id,
-        user_id
-    );
+    const _deletedTeamMember = await RemoveTeamMember(ctx.app.state.pool, team_id, user_id);
 
     return SendJSONResponse(ctx, { message: "Team member deleted" }, 200);
+});
+
+router.get("/", async (ctx) => {
+    const queryParams = getQuery(ctx);
+
+    let limit = parseInt(queryParams.limit, 10);
+    if (isNaN(limit) || limit > 200) limit = 200; // max 200 teams
+
+    let offset = parseInt(queryParams.offset, 10);
+    if (isNaN(offset)) offset = 0;
+
+    const search = queryParams.search;
+
+    let teams: Team[] = [];
+    if (search == undefined || search == "") {
+        teams = await GetTeams(ctx.app.state.pool, limit, offset);
+    } else {
+        teams = await SearchTeams(ctx.app.state.pool, search, limit, offset);
+    }
+
+    return SendJSONResponse(ctx, teams);
 });
 
 export { router as Teams };
