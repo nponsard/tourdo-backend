@@ -724,16 +724,13 @@ paths:
             schema:
               type: object
               properties:
-                team1:
+                team1_id:
                   type: number
                   nullable: true
-                team2:
+                team2_id:
                   type: number
                   nullable: true
                 date:
-                  type: string
-                  nullable: true
-                tournament_id:
                   type: number
                   nullable: true
                 row:
@@ -742,7 +739,7 @@ paths:
                 column:
                   type: number
                   nullable: true
-                winner_id:
+                status:
                   type: number
                   nullable: true
       responses:

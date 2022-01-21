@@ -15,7 +15,8 @@ create table if not exists matches
         constraint matches_tournament_id_fk
             references tournaments,
     status     int,
-    date          timestamp
+    date          timestamp,
+    unique(tournament_id, row, "column")
 );
 
 create unique index if not exists matches_id_uindex
