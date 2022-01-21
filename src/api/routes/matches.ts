@@ -12,7 +12,7 @@ import {
 } from "../../database/entities/matches.ts";
 import { GetTournamentOrganizers } from "../../database/entities/tournaments.ts";
 
-const router = new Router({ prefix: `${Prefix}/teams` });
+const router = new Router({ prefix: `${Prefix}/matches` });
 
 router.get("/:id", async (ctx) => {
     const match_id = parseInt(ctx.params.id, 10);
