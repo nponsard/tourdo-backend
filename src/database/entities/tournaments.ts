@@ -39,7 +39,7 @@ export async function CreateTournament(
 ): Promise<Tournament> {
     const client = await pool.connect();
     const result = await client.queryObject<Tournament>(
-        `INSERT INTO tournaments(type, name, description, start_date, end_date, max_teams, game_name) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+        `INSERT INTO tournaments(type, name, description, start_date, end_date, max_teams, game_name) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id, type, name, description, start_date, end_date, max_teams, game_name, status`,
         type,
         name,
         description,
