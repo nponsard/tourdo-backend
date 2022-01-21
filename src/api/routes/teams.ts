@@ -10,6 +10,7 @@ import {
     GetTeam,
     GetTeamMembers,
     GetTeams,
+    GetTeamsCount,
     RemoveTeamMember,
     Role,
     SearchTeams,
@@ -187,8 +188,14 @@ router.get("/", async (ctx) => {
     } else {
         teams = await SearchTeams(ctx.app.state.pool, search, limit, offset);
     }
+    let count = -1;
+    try {
+        count = await GetTeamsCount(ctx.app.state.pool);
+    } catch (e) {
+        console.log(e);
+    }
 
-    return SendJSONResponse(ctx, teams);
+    return SendJSONResponse(ctx, { teams, count });
 });
 
 export { router as Teams };

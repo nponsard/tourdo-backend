@@ -13,6 +13,7 @@ import {
     GetUsers,
     User,
     SearchUsers,
+    GetUsersCount,
 } from "../../database/entities/user.ts";
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.3.0/mod.ts";
 
@@ -244,7 +245,14 @@ router.get("/", async (ctx) => {
         users = await SearchUsers(ctx.app.state.pool, search, limit, offset);
     }
 
-    return SendJSONResponse(ctx, users);
+    let count = -1;
+    try {
+        count = await GetUsersCount(ctx.app.state.pool);
+    } catch (e) {
+        console.log(e);
+    }
+
+    return SendJSONResponse(ctx, { users, count });
 });
 
 export { router as Users };

@@ -64,15 +64,41 @@ export async function GetTournament(pool: Pool, id: number): Promise<Tournament>
     return result.rows[0];
 }
 
-export async function GetTournaments(pool: Pool, limit = 10): Promise<Tournament[]> {
+export async function GetTournaments(pool: Pool, limit = 10, offset = 0): Promise<Tournament[]> {
     const client = await pool.connect();
     const result = await client.queryObject<Tournament>(
-        `SELECT * FROM tournaments LIMIT $1`,
-        limit
+        `SELECT * FROM tournaments LIMIT $1 OFFSET $2`,
+        limit,
+        offset
     );
 
     client.release();
     return result.rows;
+}
+
+export async function SearchTournaments(
+    pool: Pool,
+    query: string,
+    limit = 10,
+    offset = 0
+): Promise<Tournament[]> {
+    const client = await pool.connect();
+    const result = await client.queryObject<Tournament>(
+        `SELECT * FROM tournaments WHERE name ILIKE '%' || $1 || '%' LIMIT $2 OFFSET $3`,
+        query,
+        limit,
+        offset
+    );
+
+    client.release();
+    return result.rows;
+}
+export async function GetTournamentsCount(pool: Pool): Promise<number> {
+    const client = await pool.connect();
+    const result = await client.queryObject<{ count: number }>(`SELECT count(*) FROM tournaments`);
+
+    client.release();
+    return result.rows[0].count;
 }
 
 export async function UpdateTournament(
@@ -242,7 +268,10 @@ export async function GetTournamentOrganizers(pool: Pool, tournament_id: number)
     return result.rows;
 }
 
-export async function GetTournamentsOrganizedByUser(pool: Pool, user_id: number): Promise<Tournament[]> {
+export async function GetTournamentsOrganizedByUser(
+    pool: Pool,
+    user_id: number
+): Promise<Tournament[]> {
     const client = await pool.connect();
     const result = await client.queryObject<Tournament>(
         `SELECT tournaments.* FROM tournaments JOIN tournaments_organizers ON tournaments.id = tournaments_organizers.tournament_id WHERE tournaments_organizers.user_id = $1`,

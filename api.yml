@@ -43,9 +43,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/user"
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/user"
+                  total:
+                    type: integer
+                    description: Total number of users
         "400":
           $ref: "#/components/responses/400BadRequest"
         "401":
@@ -400,9 +406,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/team"
+                type: object
+                properties:
+                  teams:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/team"
+                  total:
+                    type: number
+                    description: Total number of teams
         "400":
           $ref: "#/components/responses/400BadRequest"
         "401":
@@ -872,9 +884,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/tournament"
+                type: object
+                properties:
+                  tournaments:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/tournament"
+                  total:
+                    type: number
+                    description: Total number of tournaments
         "400":
           $ref: "#/components/responses/400BadRequest"
         "401":

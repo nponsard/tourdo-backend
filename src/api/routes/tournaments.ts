@@ -9,10 +9,15 @@ import {
     DeleteTournament,
     GetTournament,
     GetTournamentOrganizers,
+    GetTournaments,
+    GetTournamentsCount,
+    SearchTournaments,
+    Tournament,
     TournamentStatus,
     TournamentType,
     UpdateTournament,
 } from "../../database/entities/tournaments.ts";
+import { getQuery } from "https://deno.land/x/oak@v10.1.0/helpers.ts";
 
 const router = new Router({ prefix: `${Prefix}/tournaments` });
 
@@ -148,6 +153,34 @@ router.patch("/:id", async (ctx) => {
     );
 
     SendJSONResponse(ctx, tournament, 200);
+});
+
+router.get("/", async (ctx) => {
+    const queryParams = getQuery(ctx);
+
+    let limit = parseInt(queryParams.limit, 10);
+    if (isNaN(limit) || limit > 200) limit = 200; // max 200 users
+
+    let offset = parseInt(queryParams.offset, 10);
+    if (isNaN(offset)) offset = 0;
+
+    const search = queryParams.search;
+
+    let users: Tournament[] = [];
+    if (search == undefined || search == "") {
+        users = await GetTournaments(ctx.app.state.pool, limit, offset);
+    } else {
+        users = await SearchTournaments(ctx.app.state.pool, search, limit, offset);
+    }
+
+    let count = -1;
+    try {
+        count = await GetTournamentsCount(ctx.app.state.pool);
+    } catch (e) {
+        console.log(e);
+    }
+
+    return SendJSONResponse(ctx, { users, count });
 });
 
 export { router as Tournaments };
