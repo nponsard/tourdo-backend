@@ -1102,6 +1102,8 @@ components:
           type: number
         username:
           type: string
+        admin:
+          type: boolean
     team:
       type: object
       description: Team object
