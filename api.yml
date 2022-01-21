@@ -11,6 +11,50 @@ servers:
     description: prod server
 
 paths:
+  /users:
+    get:
+      summary: search users
+      description: search users
+      tags:
+        - users
+
+      parameters:
+        - in: query
+          name: search
+          description: search users
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: limit
+          description: limit the number of result, default 10
+          schema:
+            type: integer
+          required: false
+        - in: query
+          name: offset
+          description: offset the number of result, default 0
+          schema:
+            type: integer
+          required: false
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+
   /users/me:
     get:
       summary: Get current user info
@@ -331,6 +375,25 @@ paths:
       summary: Get all teams
       tags:
         - "teams"
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: number
+          description: Number of teams to return
+          required: false
+        - in: query
+          name: offset
+          schema:
+            type: number
+          description: Offset of the teams to return, default 0
+          required: false
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search for a team by name
+          required: false
       responses:
         "200":
           description: Teams found
@@ -584,27 +647,46 @@ paths:
           $ref: "#/components/responses/500InternalServerError"
 
   /matches:
-    get:
-      summary: Get all matches
-      tags:
-        - "matches"
-      responses:
-        "200":
-          description: Matches found
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/match"
-        "400":
-          $ref: "#/components/responses/400BadRequest"
-        "401":
-          $ref: "#/components/responses/401Unauthorized"
-        "403":
-          $ref: "#/components/responses/403Forbidden"
-        "500":
-          $ref: "#/components/responses/500InternalServerError"
+    # get:
+    #   summary: Get a list of matches
+    #   tags:
+    #     - "matches"
+    #   parameters:
+    #     - in: query
+    #       name: limit
+    #       schema:
+    #         type: number
+    #       description: Number of matches to return
+    #       required: false
+    #     - in: query
+    #       name: offset
+    #       schema:
+    #         type: number
+    #       description: Offset of the matches to return, default 0
+    #       required: false
+    #     - in: query
+    #       name: status
+    #       schema:
+    #         type: string
+    #       description: Status of the matches to return, default all
+    #       required: false
+    #   responses:
+    #     "200":
+    #       description: Matches found
+    #       content:
+    #         application/json:
+    #           schema:
+    #             type: array
+    #             items:
+    #               $ref: "#/components/schemas/match"
+    #     "400":
+    #       $ref: "#/components/responses/400BadRequest"
+    #     "401":
+    #       $ref: "#/components/responses/401Unauthorized"
+    #     "403":
+    #       $ref: "#/components/responses/403Forbidden"
+    #     "500":
+    #       $ref: "#/components/responses/500InternalServerError"
     post:
       summary: Create a match
       description: Create a match, if tournament_id is specified, the user must be a tournament organizer or an admin and must specify the row and column of the match
@@ -763,6 +845,27 @@ paths:
       summary: Get all tournaments
       tags:
         - "tournaments"
+
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: number
+          description: Number of matches to return
+          required: false
+        - in: query
+          name: offset
+          schema:
+            type: number
+          description: Offset of the matches to return, default 0
+          required: false
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search for string in tournaments name
+          required: false
+
       responses:
         "200":
           description: Tournaments found

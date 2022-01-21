@@ -10,7 +10,7 @@ import {
     GetMatch,
     UpdateMatch,
 } from "../../database/entities/matches.ts";
-import { GetTournament, GetTournamentOrganizers } from "../../database/entities/tournaments.ts";
+import { GetTournamentOrganizers } from "../../database/entities/tournaments.ts";
 
 const router = new Router({ prefix: `${Prefix}/teams` });
 
