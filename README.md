@@ -31,13 +31,11 @@ Backend for woa tournament app
         -   [x] PATCH /matches/{id}
 -   add procedures
 -   add functionalities : 
-    -   add team to tournament (organizer only)
-    -   team can leave tournament (organizer || team leader)
-    -   add other organizers to the tournament
-    -   start of the tournament : create matches
-    -   edit team numbers on tournament (order of appearance)
-    -   search tables
-    -   list with paging all tables
+    -  [ ] add team to tournament (organizer only)
+    -  [ ] team can leave tournament (organizer || team leader)
+    -  [ ] add other organizers to the tournament
+    -  [ ] start of the tournament : create matches / regenerate matches
+    -  [ ] edit team numbers on tournament (order of appearance)
 
 ## Deployment
 
