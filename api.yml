@@ -1292,6 +1292,102 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
+  /tournaments/{id}/organizers:
+    get:
+      summary: Get all organizers of a tournament
+      tags:
+        - "tournaments"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Organizers found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/user"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+  /tournaments/{id}/organizers/{user_id}:
+    put:
+      summary: Add an organizer to a tournament
+      description: must be admin or organizer of the tournament
+      tags:
+        - "tournaments"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Organizer added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+    delete:
+      summary: Remove an organizer from a tournament
+      description: must be admin or the user himself 
+      tags:
+        - "tournaments"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Organizer removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
+
 
 components:
   securitySchemes:
