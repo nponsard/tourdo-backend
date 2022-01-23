@@ -8,6 +8,7 @@ import {
     CreateMatch,
     DeleteMatch,
     GetMatch,
+    MatchStatus,
     UpdateMatch,
 } from "../../database/entities/matches.ts";
 import { GetTournamentOrganizers } from "../../database/entities/tournaments.ts";
@@ -62,6 +63,13 @@ router.patch("/:id", async (ctx) => {
     if (body.row) match.row = body.row;
     if (body.column) match.column = body.column;
     if (body.status) match.status = body.status;
+
+
+    if (body.status == MatchStatus.Team1Won || body.status == MatchStatus.Team2Won) {
+        // TODO : update tournament
+    
+    }
+
 
     await UpdateMatch(
         ctx.app.state.pool,

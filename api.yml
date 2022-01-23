@@ -1110,7 +1110,7 @@ paths:
               properties:
                 team_id:
                   type: number
-                position:
+                team_number:
                   type: number
                   nullable: true
       responses:
@@ -1274,7 +1274,7 @@ paths:
             schema:
               type: object
               properties:
-                position:
+                team_number:
                   type: number
                   nullable: true
       responses:

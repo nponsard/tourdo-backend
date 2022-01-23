@@ -16,6 +16,7 @@ import {
     GetTournaments,
     GetTournamentsCount,
     GetTournamentTeams,
+    RemoveTournamentTeam,
     SearchTournaments,
     Tournament,
     TournamentStatus,
@@ -341,6 +342,56 @@ router.post("/:id/matches/generate", async (ctx) => {
     );
 
     SendJSONResponse(ctx, { message: "generated" }, 200);
+});
+
+router.delete("/:id/teams/:team_id", async (ctx) => {
+    const tournament_id = parseInt(ctx.params.id, 10);
+    const team_id = parseInt(ctx.params.team_id, 10);
+
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("Authorization")
+    );
+
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    if (isNaN(tournament_id) || isNaN(team_id))
+        return SendJSONResponse(ctx, { message: "Invalid id" }, 400);
+
+    const organizers = await GetTournamentOrganizers(ctx.app.state.pool, tournament_id);
+
+    if (!user.admin && !organizers.some((u) => u.id === user.id))
+        return SendJSONResponse(ctx, { message: "Forbidden, must be organizer or admin" }, 403);
+
+    await RemoveTournamentTeam(ctx.app.state.pool, tournament_id, team_id);
+
+    SendJSONResponse(ctx, { message: "OK" }, 200);
+});
+
+router.patch("/:id/teams/:team_id", async (ctx) => {
+    const tournament_id = parseInt(ctx.params.id, 10);
+    const team_id = parseInt(ctx.params.team_id, 10);
+
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("Authorization")
+    );
+
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    if (isNaN(tournament_id) || isNaN(team_id))
+        return SendJSONResponse(ctx, { message: "Invalid id" }, 400);
+
+    const organizers = await GetTournamentOrganizers(ctx.app.state.pool, tournament_id);
+
+    if (!user.admin && !organizers.some((u) => u.id === user.id))
+        return SendJSONResponse(ctx, { message: "Forbidden, must be organizer or admin" }, 403);
+
+    const body = await ParseBodyJSON<{ team_number: number }>(ctx);
+
+    await ChangeTeamNumber(ctx.app.state.pool, tournament_id, team_id, body.team_number);
+
+    SendJSONResponse(ctx, { message: "OK" }, 200);
 });
 
 export { router as Tournaments };
