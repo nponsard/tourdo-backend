@@ -51,6 +51,25 @@ export async function GetMatch(pool: Pool, id: number): Promise<Match> {
     client.release();
     return result.rows[0];
 }
+
+export async function GetTournamentMatch(
+    pool: Pool,
+    tournament_id: number,
+    row: number,
+    column: number
+): Promise<Match> {
+    const client = await pool.connect();
+    const result = await client.queryObject<Match>(
+        `SELECT * FROM matches WHERE tournament_id = $1 and row = $2 and column = $3`,
+        tournament_id,
+        row,
+        column
+    );
+
+    client.release();
+    return result.rows[0];
+}
+
 export async function GetMatches(pool: Pool, limit = 10): Promise<Match[]> {
     const client = await pool.connect();
     const result = await client.queryObject<Match>(`SELECT * FROM matches LIMIT $1`, limit);

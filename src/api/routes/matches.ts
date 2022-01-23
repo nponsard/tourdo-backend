@@ -12,6 +12,7 @@ import {
     UpdateMatch,
 } from "../../database/entities/matches.ts";
 import { GetTournamentOrganizers } from "../../database/entities/tournaments.ts";
+import { UpdateTournamentMatches } from "../../tournaments/update.ts";
 
 const router = new Router({ prefix: `${Prefix}/matches` });
 
@@ -64,13 +65,6 @@ router.patch("/:id", async (ctx) => {
     if (body.column) match.column = body.column;
     if (body.status) match.status = body.status;
 
-
-    if (body.status == MatchStatus.Team1Won || body.status == MatchStatus.Team2Won) {
-        // TODO : update tournament
-    
-    }
-
-
     await UpdateMatch(
         ctx.app.state.pool,
         match.id,
@@ -82,6 +76,9 @@ router.patch("/:id", async (ctx) => {
         match.status,
         match.date
     );
+
+    if (body.status == MatchStatus.Team1Won || body.status == MatchStatus.Team2Won)
+        await UpdateTournamentMatches(ctx.app.state.pool, match);
 
     SendJSONResponse(ctx, match, 200);
 });
