@@ -37,6 +37,13 @@ Backend for woa tournament app
     -  [x] start of the tournament : create matches / regenerate matches
     -  [x] edit team numbers on tournament (order of appearance)
 
+
+### procedures
+- `match_count_trigger` : Update total of matches played after the match ends
+
+
+- `tournament_participants_check` and `tournament_organizer_check` : A user can’t be on 2 teams participating at the same Tournament / event and can’t be player and organizer of a Tournament / event
+
 ## Deployment
 
 Needs to be linked to a postgreSQL database.
@@ -111,9 +118,3 @@ EVENT_NAME)\
 DESCRIPTION, MATCH_COUNT, WIN_COUNT)\
 [x] TOKENS(**ACCESSHASH**, #USER_ID)
 
-### procedures
-Update total of matches played after the match ends
-
-
-A user can’t be on 2 teams participating at the same Tournament / event A user
-can’t be player and organizer of a Tournament / event
