@@ -387,6 +387,11 @@ router.patch("/:id/teams/:team_id", async (ctx) => {
     if (!user.admin && !organizers.some((u) => u.id === user.id))
         return SendJSONResponse(ctx, { message: "Forbidden, must be organizer or admin" }, 403);
 
+    const tournament = await GetTournament(ctx.app.state.pool, tournament_id);
+
+    if (tournament.status != TournamentStatus.Created)
+        return SendJSONResponse(ctx, { message: "Tournament must not be generated" }, 400);
+
     const body = await ParseBodyJSON<{ team_number: number }>(ctx);
 
     await ChangeTeamNumber(ctx.app.state.pool, tournament_id, team_id, body.team_number);
