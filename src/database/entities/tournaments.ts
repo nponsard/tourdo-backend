@@ -27,6 +27,10 @@ export interface Tournament {
     game_name: string;
     status: TournamentStatus;
 }
+export interface TournamentTeam {
+    team: Team;
+    team_number: number;
+}
 
 export async function CreateTournament(
     pool: Pool,
@@ -106,6 +110,7 @@ export async function UpdateTournament(
     pool: Pool,
     id: number,
     type: TournamentType,
+    status: TournamentStatus,
     name: string,
     description: string,
     start_date: Date,
@@ -115,7 +120,7 @@ export async function UpdateTournament(
 ): Promise<Tournament> {
     const client = await pool.connect();
     const result = await client.queryObject<Tournament>(
-        `UPDATE tournaments SET type = $1, name = $2, description = $3, start_date = $4, end_date = $5, max_teams = $6, game_name = $7 WHERE id = $8 RETURNING *`,
+        `UPDATE tournaments SET type = $1, name = $2, description = $3, start_date = $4, end_date = $5, max_teams = $6, game_name = $7 , status = $8, WHERE id = $9 RETURNING *`,
         type,
         name,
         description,
@@ -123,6 +128,7 @@ export async function UpdateTournament(
         end_date,
         max_teams,
         game_name,
+        status,
         id
     );
 

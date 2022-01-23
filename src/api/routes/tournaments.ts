@@ -24,6 +24,8 @@ import {
 } from "../../database/entities/tournaments.ts";
 import { getQuery } from "https://deno.land/x/oak@v10.1.0/helpers.ts";
 import { ShuffleTournamentTeams } from "../../tournaments/shuffle.ts";
+import { GenerateMatches } from "../../tournaments/generate.ts";
+import { CreateMatch, MatchStatus } from "../../database/entities/matches.ts";
 
 const router = new Router({ prefix: `${Prefix}/tournaments` });
 
@@ -150,6 +152,7 @@ router.patch("/:id", async (ctx) => {
         ctx.app.state.pool,
         newTournament.id,
         newTournament.type,
+        newTournament.status,
         newTournament.name,
         newTournament.description,
         newTournament.start_date,
@@ -215,6 +218,20 @@ router.put("/:id/teams", async (ctx) => {
 
     if (!user.admin && !organizers.some((u) => u.id === user.id))
         return SendJSONResponse(ctx, { message: "Forbidden, must be organizer or admin" }, 403);
+
+    const tournament = await GetTournament(ctx.app.state.pool, tournament_id);
+
+    if (!tournament) return SendJSONResponse(ctx, { message: "Tournament not found" }, 404);
+    if (tournament.status !== TournamentStatus.Created)
+        return SendJSONResponse(
+            ctx,
+            { message: "Tournament already generated, can’t add new teams" },
+            400
+        );
+
+    const teams = await GetTournamentTeams(ctx.app.state.pool, tournament_id);
+    if (tournament.max_teams !== undefined && tournament.max_teams <= teams.length)
+        return SendJSONResponse(ctx, { message: "Tournament already has max teams" }, 400);
 
     const body = await ParseBodyJSON<{
         team_id: number;
@@ -295,9 +312,33 @@ router.post("/:id/matches/generate", async (ctx) => {
 
     const teams = await GetTournamentTeams(ctx.app.state.pool, tournament_id);
 
+    const newMatches = GenerateMatches(tournament, teams);
 
+    for (const match of newMatches.matches) {
+        await CreateMatch(
+            ctx.app.state.pool,
+            match.team1_id,
+            match.team2_id,
+            match.row,
+            match.column,
+            tournament_id,
+            MatchStatus.Created,
+            match.date
+        );
+    }
 
-
+    await UpdateTournament(
+        ctx.app.state.pool,
+        tournament_id,
+        tournament.type,
+        TournamentStatus.Generated,
+        tournament.name,
+        tournament.description,
+        tournament.start_date,
+        tournament.end_date,
+        newMatches.capacity,
+        tournament.game_name
+    );
 
     SendJSONResponse(ctx, { message: "generated" }, 200);
 });

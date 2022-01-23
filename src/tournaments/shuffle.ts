@@ -1,4 +1,3 @@
-import { Pool } from "https://deno.land/x/postgres@v0.14.3/pool.ts";
 import { Team } from "../database/entities/team.ts";
 
 export function ShuffleTournamentTeams(
