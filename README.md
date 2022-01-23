@@ -112,6 +112,8 @@ DESCRIPTION, MATCH_COUNT, WIN_COUNT)\
 [x] TOKENS(**ACCESSHASH**, #USER_ID)
 
 ### procedures
+Update total of matches played after the match ends
+
 
 A user can’t be on 2 teams participating at the same Tournament / event A user
 can’t be player and organizer of a Tournament / event
