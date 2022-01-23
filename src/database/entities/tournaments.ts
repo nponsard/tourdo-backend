@@ -141,15 +141,40 @@ export async function DeleteTournament(pool: Pool, id: number): Promise<Tourname
     return result.rows[0];
 }
 
-export async function GetTournamentTeams(pool: Pool, id: number): Promise<Team[]> {
+export async function GetTournamentTeams(
+    pool: Pool,
+    id: number
+): Promise<{ team: Team; team_number: number }[]> {
     const client = await pool.connect();
-    const result = await client.queryObject<Team>(
-        `SELECT teams.* FROM teams JOIN tournaments_participants ON teams.id = tournaments_participants.team_id WHERE tournaments_participants.tournament_id = $1`,
+    const result = await client.queryObject<{
+        id: number;
+        name: string;
+        description: string;
+        match_count: number;
+        win_count: number;
+        team_number: number;
+    }>(
+        `SELECT teams.*, tournament_participant.team_number team_number FROM teams JOIN tournaments_participants ON teams.id = tournaments_participants.team_id WHERE tournaments_participants.tournament_id = $1`,
         id
     );
 
     client.release();
-    return result.rows;
+
+    const out = [];
+
+    for (const entry of result.rows) {
+        out[entry.team_number] = {
+            team: {
+                id: entry.id,
+                name: entry.name,
+                description: entry.description,
+                match_count: entry.match_count,
+                win_count: entry.win_count,
+            },
+            team_number: entry.team_number,
+        };
+    }
+    return out;
 }
 
 export async function GetTournamentMatches(pool: Pool, id: number): Promise<Match[]> {
@@ -281,4 +306,11 @@ export async function GetTournamentsOrganizedByUser(
 
     client.release();
     return result.rows;
+}
+
+export async function DeleteTournamentMatches(pool: Pool, tournament_id: number): Promise<void> {
+    const client = await pool.connect();
+    await client.queryObject(`DELETE FROM matches WHERE tournament_id = $1`, tournament_id);
+
+    client.release();
 }

@@ -5,12 +5,17 @@ import { Prefix } from "../utils.ts";
 import { GetUserWithAccessToken } from "../../jwt/user.ts";
 import {
     AddOrganizer,
+    AddTournamentTeam,
+    ChangeTeamNumber,
     CreateTournament,
     DeleteTournament,
+    DeleteTournamentMatches,
     GetTournament,
+    GetTournamentMatches,
     GetTournamentOrganizers,
     GetTournaments,
     GetTournamentsCount,
+    GetTournamentTeams,
     SearchTournaments,
     Tournament,
     TournamentStatus,
@@ -18,6 +23,7 @@ import {
     UpdateTournament,
 } from "../../database/entities/tournaments.ts";
 import { getQuery } from "https://deno.land/x/oak@v10.1.0/helpers.ts";
+import { ShuffleTournamentTeams } from "../../tournaments/shuffle.ts";
 
 const router = new Router({ prefix: `${Prefix}/tournaments` });
 
@@ -181,6 +187,119 @@ router.get("/", async (ctx) => {
     }
 
     return SendJSONResponse(ctx, { users, total });
+});
+
+router.get("/:id/teams", async (ctx) => {
+    const tournament_id = parseInt(ctx.params.id, 10);
+
+    if (isNaN(tournament_id)) return SendJSONResponse(ctx, { message: "Invalid id" }, 400);
+
+    const teams = await GetTournamentTeams(ctx.app.state.pool, tournament_id);
+
+    SendJSONResponse(ctx, teams, 200);
+});
+
+router.put("/:id/teams", async (ctx) => {
+    const tournament_id = parseInt(ctx.params.id, 10);
+
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("Authorization")
+    );
+
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    if (isNaN(tournament_id)) return SendJSONResponse(ctx, { message: "Invalid id" }, 400);
+
+    const organizers = await GetTournamentOrganizers(ctx.app.state.pool, tournament_id);
+
+    if (!user.admin && !organizers.some((u) => u.id === user.id))
+        return SendJSONResponse(ctx, { message: "Forbidden, must be organizer or admin" }, 403);
+
+    const body = await ParseBodyJSON<{
+        team_id: number;
+    }>(ctx);
+
+    const team = await AddTournamentTeam(ctx.app.state.pool, tournament_id, body.team_id);
+
+    SendJSONResponse(ctx, team, 200);
+});
+
+router.post("/:id/teams/shuffle", async (ctx) => {
+    const tournament_id = parseInt(ctx.params.id, 10);
+
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("Authorization")
+    );
+
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    if (isNaN(tournament_id)) return SendJSONResponse(ctx, { message: "Invalid id" }, 400);
+
+    const organizers = await GetTournamentOrganizers(ctx.app.state.pool, tournament_id);
+
+    if (!user.admin && !organizers.some((u) => u.id === user.id))
+        return SendJSONResponse(ctx, { message: "Forbidden, must be organizer or admin" }, 403);
+
+    const teams = await GetTournamentTeams(ctx.app.state.pool, tournament_id);
+
+    if (!teams) return SendJSONResponse(ctx, { message: "No teams" }, 400);
+
+    const shuffled = ShuffleTournamentTeams(teams);
+
+    for (const team of shuffled) {
+        await ChangeTeamNumber(ctx.app.state.pool, tournament_id, team.team_id, team.team_number);
+    }
+
+    SendJSONResponse(ctx, { message: "OK" }, 200);
+});
+
+router.get("/:id/matches", async (ctx) => {
+    const tournament_id = parseInt(ctx.params.id, 10);
+
+    if (isNaN(tournament_id)) return SendJSONResponse(ctx, { message: "Invalid id" }, 400);
+
+    const matches = await GetTournamentMatches(ctx.app.state.pool, tournament_id);
+
+    SendJSONResponse(ctx, matches, 200);
+});
+
+router.post("/:id/matches/generate", async (ctx) => {
+    const tournament_id = parseInt(ctx.params.id, 10);
+
+    const user = await GetUserWithAccessToken(
+        ctx.app.state.pool,
+        ctx.request.headers.get("Authorization")
+    );
+
+    if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
+
+    if (isNaN(tournament_id)) return SendJSONResponse(ctx, { message: "Invalid id" }, 400);
+
+    const organizers = await GetTournamentOrganizers(ctx.app.state.pool, tournament_id);
+
+    if (!user.admin && !organizers.some((u) => u.id === user.id))
+        return SendJSONResponse(ctx, { message: "Forbidden, must be organizer or admin" }, 403);
+
+    const tournament = await GetTournament(ctx.app.state.pool, tournament_id);
+
+    if (!tournament) return SendJSONResponse(ctx, { message: "No tournament" }, 400);
+
+    if (tournament.type == TournamentType.None)
+        return SendJSONResponse(ctx, { message: "No type" }, 400);
+
+    const matches = await GetTournamentMatches(ctx.app.state.pool, tournament_id);
+
+    if (matches.length > 0) await DeleteTournamentMatches(ctx.app.state.pool, tournament_id);
+
+    const teams = await GetTournamentTeams(ctx.app.state.pool, tournament_id);
+
+
+
+
+
+    SendJSONResponse(ctx, { message: "generated" }, 200);
 });
 
 export { router as Tournaments };

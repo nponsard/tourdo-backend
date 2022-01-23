@@ -1074,7 +1074,12 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/team"
+                  type: object
+                  properties:
+                    team:
+                      $ref: "#/components/schemas/team"
+                    team_number:
+                      type: number
         "400":
           $ref: "#/components/responses/400BadRequest"
         "401":
@@ -1085,7 +1090,7 @@ paths:
           $ref: "#/components/responses/500InternalServerError"
     put:
       summary: Create a team in a tournament
-      description:  must be admin or organizer of the tournament
+      description: must be admin or organizer of the tournament
       tags:
         - "tournaments"
       security:
@@ -1287,7 +1292,6 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-
 
 components:
   securitySchemes:
