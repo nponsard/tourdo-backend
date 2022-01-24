@@ -3,6 +3,8 @@
 Backend for woa tournament app
 
 ## TODO :
+- search tournament by game 
+
 
 -  [x] implement api
     -   [x] users
