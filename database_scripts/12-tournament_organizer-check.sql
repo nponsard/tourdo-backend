@@ -23,6 +23,7 @@ begin
     if count > 0 then
         raise 'user % can’t join, he is already in the tournament', new.user_id;
     end if;
+    return new;
 end
 $$;
 

@@ -27,6 +27,7 @@ begin
     if count > 0 then
         raise 'team % can’t join, % members are already in the tournament', new.team_id, count;
     end if;
+    return new;
 end
 $$;
 
