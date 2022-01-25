@@ -8,7 +8,7 @@ create table if not exists tournaments
     description text,
     start_date  date,
     end_date    date,
-    status      int,
+    status      int default 0,
     max_teams int,
     game_name  text
 );
