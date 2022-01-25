@@ -104,6 +104,8 @@ router.get("/:id", async (ctx) => {
 
     const tournament = await GetTournament(ctx.app.state.pool, tournament_id);
 
+    if (!tournament) return SendJSONResponse(ctx, { message: "Tournament not found" }, 404);
+
     SendJSONResponse(ctx, tournament, 200);
 });
 
