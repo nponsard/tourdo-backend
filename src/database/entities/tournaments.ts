@@ -160,7 +160,7 @@ export async function GetTournamentTeams(
         win_count: number;
         team_number: number;
     }>(
-        `SELECT teams.*, tournament_participant.team_number team_number FROM teams JOIN tournaments_participants ON teams.id = tournaments_participants.team_id WHERE tournaments_participants.tournament_id = $1`,
+        `SELECT teams.*, tournaments_participants.team_number team_number FROM teams JOIN tournaments_participants ON teams.id = tournaments_participants.team_id WHERE tournaments_participants.tournament_id = $1`,
         id
     );
 
