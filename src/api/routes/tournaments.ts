@@ -239,6 +239,7 @@ router.put("/:id/teams", async (ctx) => {
 
     const body = await ParseBodyJSON<{
         team_id: number;
+        team_number: number;
     }>(ctx);
 
     const team = await AddTournamentTeam(ctx.app.state.pool, tournament_id, body.team_id);

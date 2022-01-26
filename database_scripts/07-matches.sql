@@ -3,10 +3,10 @@ create table if not exists matches
     id            serial
         constraint matches_pk
             primary key,
-    team1_id      int default null
+    team1_id      int  null
         constraint matches_team1__fk
             references teams,
-    team2_id      int default null
+    team2_id      int  null
         constraint matches_team2__fk
             references teams,
     row           int default null,

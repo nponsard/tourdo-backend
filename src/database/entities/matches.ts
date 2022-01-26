@@ -31,7 +31,7 @@ export async function CreateMatch(
 ): Promise<Match> {
     const client = await pool.connect();
     const result = await client.queryObject<Match>(
-        `INSERT INTO matches(team1_id, team2_id, row, column, tournament_id, status, date) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
+        `INSERT INTO matches(team1_id, team2_id, row, "column", tournament_id, status, date) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
         team1_id,
         team2_id,
         row,
@@ -60,7 +60,7 @@ export async function GetTournamentMatch(
 ): Promise<Match> {
     const client = await pool.connect();
     const result = await client.queryObject<Match>(
-        `SELECT * FROM matches WHERE tournament_id = $1 and row = $2 and column = $3`,
+        `SELECT * FROM matches WHERE tournament_id = $1 and row = $2 and "column" = $3`,
         tournament_id,
         row,
         column
@@ -125,7 +125,7 @@ export async function UpdateMatch(
 ): Promise<Match> {
     const client = await pool.connect();
     const result = await client.queryObject<Match>(
-        `UPDATE matches SET team1_id = $1, team2_id = $2, row = $3, column = $4, tournament_id = $5, status = $6, date = $7 WHERE id = $8 RETURNING id`,
+        `UPDATE matches SET team1_id = $1, team2_id = $2, row = $3, "column" = $4, tournament_id = $5, status = $6, date = $7 WHERE id = $8 RETURNING id`,
         team1_id,
         team2_id,
         row,
