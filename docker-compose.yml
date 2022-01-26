@@ -16,7 +16,7 @@ services:
       - DB_PASSWORD=example
       - DB_DATABASE=postgres
       - JWT_KEY=WzIyMywxOTYsNzAsMjI4LDYzLDcwLDExOCw0NSw4MiwxMDUsMTI0LDkwLDI1MCwxNDQsMjEyLDEzLDE0LDIwNyw3NSwyMjgsMjMyLDI0NywxNCwxMDIsMTkyLDIyMSw5MCwxNzIsMTM5LDE5MywxOTQsMTM5LDc0LDUxLDUsMjE3LDE5MiwyMjEsMTc4LDEzMywyMjEsMTQxLDE0NSwxNDksODEsMzQsMjAxLDEyLDYzLDE0MSwyNSwyNDMsMTEzLDE0OCwyNDgsNzEsNzMsNywyNDcsNTYsMTk4LDk4LDQyLDI0MywyNCwxNjgsMjU0LDg3LDI5LDg4LDE1MywyMDcsMTA3LDExMSwxMjEsMTA3LDE3Nyw5NCwxNjAsMjE2LDEsMTIzLDExOCwxLDM1LDI1MSw3MiwxOTIsMjQsMTQ4LDIxMywxODAsMjIwLDEzLDI3LDkyLDE5MiwxNzMsMTg4LDIzMSwzMCw4MiwyMTcsOTUsMTA4LDAsNzAsNzksMTU1LDE2OCwzMiwxMDIsMTczLDM1LDY3LDMzLDIzNywyNTEsMzUsMjQ5LDg0LDQxLDI1MCwxODEsNzAsMzAsNzksMTg4XQ==
-  
+    restart: unless-stopped  
   swagger:
     image: swaggerapi/swagger-ui
     ports:
@@ -25,6 +25,8 @@ services:
       - SWAGGER_JSON=/swagger.yml
     volumes:
       - ./api.yml:/swagger.yml
+    restart: unless-stopped  
+    
   db:
     image: postgres
     restart: always
@@ -38,6 +40,7 @@ services:
     # debug, remove when done
     ports:
       - "5432:5432"
+    
 
   # explore database, for debug only
   adminer:
