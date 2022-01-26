@@ -149,7 +149,7 @@ export async function DeleteTournament(pool: Pool, id: number): Promise<Tourname
 
 export async function GetTournamentTeams(
     pool: Pool,
-    id: number
+    tournament_id: number
 ): Promise<{ team: Team; team_number: number }[]> {
     const client = await pool.connect();
     const result = await client.queryObject<{
@@ -161,7 +161,7 @@ export async function GetTournamentTeams(
         team_number: number;
     }>(
         `SELECT teams.*, tournaments_participants.team_number team_number FROM teams JOIN tournaments_participants ON teams.id = tournaments_participants.team_id WHERE tournaments_participants.tournament_id = $1`,
-        id
+        tournament_id
     );
 
     client.release();
@@ -169,7 +169,8 @@ export async function GetTournamentTeams(
     const out = [];
 
     for (const entry of result.rows) {
-        out[entry.team_number] = {
+        console.log(entry);
+        out.push({
             team: {
                 id: entry.id,
                 name: entry.name,
@@ -178,8 +179,10 @@ export async function GetTournamentTeams(
                 win_count: entry.win_count,
             },
             team_number: entry.team_number,
-        };
+        });
     }
+    console.log(out);
+
     return out;
 }
 
