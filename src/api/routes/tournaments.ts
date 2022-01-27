@@ -406,7 +406,6 @@ router.patch("/:id/teams/:team_id", async (ctx) => {
 router.put("/:id/organizers/:user_id", async (ctx) => {
     const tournament_id = parseInt(ctx.params.id, 10);
     const user_id = parseInt(ctx.params.user_id, 10);
-
     const user = await GetUserWithAccessToken(
         ctx.app.state.pool,
         ctx.request.headers.get("Authorization")
