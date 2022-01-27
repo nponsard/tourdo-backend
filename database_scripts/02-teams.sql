@@ -6,7 +6,8 @@ create table if not exists teams
     name        varchar(50),
     description text,
     match_count int default 0,
-    win_count   int default 0
+    win_count   int default 0,
+    UNIQUE(name)
 );
 
 create unique index if not exists teams_id_uindex
