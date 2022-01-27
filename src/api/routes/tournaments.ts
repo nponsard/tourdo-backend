@@ -403,7 +403,7 @@ router.patch("/:id/teams/:team_id", async (ctx) => {
     SendJSONResponse(ctx, { message: "OK" }, 200);
 });
 
-router.put("/:id/ogranizers/:user_id", async (ctx) => {
+router.put("/:id/organizers/:user_id", async (ctx) => {
     const tournament_id = parseInt(ctx.params.id, 10);
     const user_id = parseInt(ctx.params.user_id, 10);
 
@@ -426,7 +426,7 @@ router.put("/:id/ogranizers/:user_id", async (ctx) => {
 
     SendJSONResponse(ctx, { message: "OK" }, 200);
 });
-router.delete("/:id/ogranizers/:user_id", async (ctx) => {
+router.delete("/:id/organizers/:user_id", async (ctx) => {
     const tournament_id = parseInt(ctx.params.id, 10);
     const user_id = parseInt(ctx.params.user_id, 10);
 
