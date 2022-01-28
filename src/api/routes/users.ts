@@ -144,7 +144,11 @@ router.get("/:id/teams", async (ctx) => {
 });
 
 router.get("/:id", async (ctx) => {
-    const user = await GetUser(ctx.app.state.pool, parseInt(ctx.params.id));
+    const userId = parseInt(ctx.params.id, 10);
+
+    if (isNaN(userId)) return SendJSONResponse(ctx, { message: "Invalid user id" }, 400);
+
+    const user = await GetUser(ctx.app.state.pool, userId);
 
     if (!user) return SendJSONResponse(ctx, { message: "Not found" }, 404);
 
