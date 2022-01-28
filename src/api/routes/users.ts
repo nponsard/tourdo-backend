@@ -160,7 +160,11 @@ router.patch("/me", async (ctx) => {
 });
 
 router.get("/:id/teams", async (ctx) => {
-    const teams = await GetParticipationInTeams(ctx.app.state.pool, parseInt(ctx.params.id));
+    const userId = parseInt(ctx.params.id, 10);
+
+    if (isNaN(userId)) return SendJSONResponse(ctx, { message: "Invalid user id" }, 400);
+
+    const teams = await GetParticipationInTeams(ctx.app.state.pool, userId);
 
     return SendJSONResponse(ctx, teams);
 });
