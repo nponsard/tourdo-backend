@@ -1,9 +1,9 @@
 create table if not exists tournaments_participants
 (
     team_id       int not null
-    references teams,
+    references teams  on delete cascade,
     tournament_id serial not null
-    references  tournaments,
+    references  tournaments  on delete cascade,
     team_number   int,
         constraint tournaments_participants_pk
         primary key (team_id, tournament_id)

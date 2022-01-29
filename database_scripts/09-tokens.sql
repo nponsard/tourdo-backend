@@ -5,7 +5,7 @@ create table if not exists tokens
             primary key,
     user_id     int  not null
         constraint tokens_users_id_fk
-            references users,
+            references users  on delete cascade,
     access_token       text not null,
     expiration timestamp not null,
     refresh_token text not null,

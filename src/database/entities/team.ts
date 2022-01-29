@@ -77,10 +77,10 @@ export async function DeleteTeam(db: Pool, id: number): Promise<Team> {
         "DELETE FROM teams WHERE id = $1 RETURNING *",
         id
     );
-    const _users = await client.queryObject<TeamMember[]>(
-        "DELETE FROM teams_composition WHERE team_id = $1 RETURNING *",
-        id
-    );
+    // const _users = await client.queryObject<TeamMember[]>(
+    //     "DELETE FROM teams_composition WHERE team_id = $1 RETURNING *",
+    //     id
+    // );
 
     client.release();
 
