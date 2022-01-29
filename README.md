@@ -4,7 +4,8 @@ Backend for woa tournament app
 
 ## TODO :
 
--   search tournament by game
+-   sort search by id desc
+-   search tournament by game name
 -   get tournaments of team
 
 -   [x] implement api
