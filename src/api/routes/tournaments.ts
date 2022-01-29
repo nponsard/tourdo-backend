@@ -328,7 +328,7 @@ router.post("/:id/matches/generate", async (ctx) => {
             match.column,
             tournament_id,
             MatchStatus.Created,
-            match.date
+            match.date ?? new Date()
         );
     }
 

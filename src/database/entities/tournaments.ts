@@ -21,8 +21,8 @@ export interface Tournament {
     type: TournamentType;
     name: string;
     description: string;
-    start_date: Date;
-    end_date: Date;
+    start_date: Date | null;
+    end_date: Date | null;
     max_teams: number;
     game_name: string;
     status: TournamentStatus;
@@ -113,8 +113,8 @@ export async function UpdateTournament(
     status: TournamentStatus,
     name: string,
     description: string,
-    start_date: Date,
-    end_date: Date,
+    start_date: Date | null,
+    end_date: Date | null,
     max_teams: number,
     game_name: string
 ): Promise<Tournament> {
