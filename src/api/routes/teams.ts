@@ -8,6 +8,7 @@ import {
     CreateTeam,
     DeleteTeam,
     GetTeam,
+    GetTeamByName,
     GetTeamMembers,
     GetTeams,
     GetTeamsCount,
@@ -30,6 +31,11 @@ router.post("/", async (ctx) => {
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
     const body = await ParseBodyJSON<{ name: string; description: string }>(ctx);
+
+    const exists = await GetTeamByName(ctx.app.state.pool, body.name);
+
+    if (exists && exists.name === body.name)
+        return SendJSONResponse(ctx, { message: "Team already exists" }, 409);
 
     const team = await CreateTeam(ctx.app.state.pool, body.name, body.description, user.id);
 
@@ -107,7 +113,7 @@ router.get("/:id/users", async (ctx) => {
 
     const members = await GetTeamMembers(ctx.app.state.pool, id);
 
-    console.log(members)
+    console.log(members);
 
     if (!members) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
 

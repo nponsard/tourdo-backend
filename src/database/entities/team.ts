@@ -205,3 +205,12 @@ export async function SearchTeams(
     client.release();
     return result.rows;
 }
+
+export async function GetTeamByName(db: Pool, name: string): Promise<Team> {
+    const client = await db.connect();
+
+    const result = await client.queryObject<Team>("SELECT * FROM teams WHERE name = $1", name);
+
+    client.release();
+    return result.rows[0];
+}
