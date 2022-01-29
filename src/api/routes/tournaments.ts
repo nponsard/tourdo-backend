@@ -50,11 +50,12 @@ router.post("/", async (ctx) => {
         game_name: string;
     }>(ctx);
 
+    if (body.name.length < 3) return SendJSONResponse(ctx, { message: "Invalid name" }, 400);
 
     const exists = await GetTournamentExactName(ctx.app.state.pool, body.name);
 
-    if (exists) return SendJSONResponse(ctx, { message: "Tournament with this name already exists" }, 409);
-
+    if (exists)
+        return SendJSONResponse(ctx, { message: "Tournament with this name already exists" }, 409);
 
     const tournament = await CreateTournament(
         ctx.app.state.pool,
@@ -158,6 +159,9 @@ router.patch("/:id", async (ctx) => {
     if (body.max_teams !== undefined) newTournament.max_teams = body.max_teams;
     if (body.game_name !== undefined) newTournament.game_name = body.game_name;
     if (body.status !== undefined) newTournament.status = body.status;
+
+    if (newTournament.name.length < 3)
+        return SendJSONResponse(ctx, { message: "Invalid name" }, 400);
 
     const tournament = await UpdateTournament(
         ctx.app.state.pool,
