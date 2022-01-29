@@ -11,6 +11,7 @@ import {
     DeleteTournament,
     DeleteTournamentMatches,
     GetTournament,
+    GetTournamentExactName,
     GetTournamentMatches,
     GetTournamentOrganizers,
     GetTournaments,
@@ -48,6 +49,12 @@ router.post("/", async (ctx) => {
         max_teams: number;
         game_name: string;
     }>(ctx);
+
+
+    const exists = await GetTournamentExactName(ctx.app.state.pool, body.name);
+
+    if (exists) return SendJSONResponse(ctx, { message: "Tournament with this name already exists" }, 409);
+
 
     const tournament = await CreateTournament(
         ctx.app.state.pool,
