@@ -111,10 +111,12 @@ router.get("/:id/users", async (ctx) => {
     return SendJSONResponse(ctx, members, 200);
 });
 
-router.put("/:id/users", async (ctx) => {
+router.put("/:id/users/:user_id", async (ctx) => {
     const team_id = parseInt(ctx.params.id, 10);
+    const user_id = parseInt(ctx.params.user_id, 10);
 
-    if (isNaN(team_id)) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+    if (isNaN(team_id) || isNaN(user_id))
+        return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const user = await GetUserWithAccessToken(
         ctx.app.state.pool,
@@ -132,11 +134,11 @@ router.put("/:id/users", async (ctx) => {
     )
         return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
-    const body = await ParseBodyJSON<{ id: number; role: Role }>(ctx);
+    const body = await ParseBodyJSON<{ role: Role }>(ctx);
 
     // si on doit l’ajouter
-    if (!members.some((member) => member.user_id == body.id))
-        await AddTeamMember(ctx.app.state.pool, team_id, body.id, body.role);
+    if (!members.some((member) => member.user_id == user_id))
+        await AddTeamMember(ctx.app.state.pool, team_id, user_id, body.role);
 
     return SendJSONResponse(ctx, { message: "OK" }, 200);
 });

@@ -583,6 +583,7 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
+  /teams/{id}/users/{userId}:
     put:
       summary: Add a player to a team
       description: Add a player to a team, the user must be admin or captain of the team
@@ -596,6 +597,11 @@ paths:
           required: true
           schema:
             type: number
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: number
       requestBody:
         description: User info
         content:
@@ -603,8 +609,6 @@ paths:
             schema:
               type: object
               properties:
-                id:
-                  type: number
                 role:
                   type: number
                   description: 1 = captain, 0 = player
@@ -623,7 +627,6 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-  /teams/{id}/users/{userId}:
     delete:
       summary: Remove a player from a team
       description: Remove a player from a team, the user doing the action must be admin, captain of the team or the player to remove
@@ -1356,7 +1359,7 @@ paths:
           $ref: "#/components/responses/500InternalServerError"
     delete:
       summary: Remove an organizer from a tournament
-      description: must be admin or the user himself 
+      description: must be admin or the user himself
       tags:
         - "tournaments"
       security:
@@ -1387,7 +1390,6 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-
 
 components:
   securitySchemes:
