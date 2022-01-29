@@ -89,7 +89,7 @@ export async function SearchTournaments(
 ): Promise<Tournament[]> {
     const client = await pool.connect();
     const result = await client.queryObject<Tournament>(
-        `SELECT * FROM tournaments WHERE name ILIKE '%' || $1 || '%' LIMIT $2 OFFSET $3`,
+        `SELECT * FROM tournaments WHERE name LIKE '%' || $1 || '%' or game_name LIKE '%' || $1 || '%' ORDER BY id DESC  LIMIT $2 OFFSET $3`,
         query,
         limit,
         offset
