@@ -3,10 +3,11 @@
 Backend for woa tournament app
 
 ## TODO :
-- search tournament by game 
 
+-   search tournament by game
+-   get tournaments of team
 
--  [x] implement api
+-   [x] implement api
     -   [x] users
         -   [x] SEARCH user
     -   [x] tokens
@@ -31,20 +32,19 @@ Backend for woa tournament app
         -   [x] GET /matches/{id}
         -   [x] DELETE /matches/{id}
         -   [x] PATCH /matches/{id}
--  [x] add procedures
--  [x] add functionalities : 
-    -  [x] add team to tournament (organizer only)
-    -  [x] team can leave tournament (organizer)
-    -  [y] add other organizers to the tournament
-    -  [x] start of the tournament : create matches / regenerate matches
-    -  [x] edit team numbers on tournament (order of appearance)
-
+-   [x] add procedures
+-   [x] add functionalities :
+    -   [x] add team to tournament (organizer only)
+    -   [x] team can leave tournament (organizer)
+    -   [y] add other organizers to the tournament
+    -   [x] start of the tournament : create matches / regenerate matches
+    -   [x] edit team numbers on tournament (order of appearance)
 
 ### procedures
-- `match_count_trigger` : Update total of matches played after the match ends
 
+-   `match_count_trigger` : Update total of matches played after the match ends
 
-- `tournament_participants_check` and `tournament_organizer_check` : A user can’t be on 2 teams participating at the same Tournament / event and can’t be player and organizer of a Tournament / event
+-   `tournament_participants_check` and `tournament_organizer_check` : A user can’t be on 2 teams participating at the same Tournament / event and can’t be player and organizer of a Tournament / event
 
 ## Deployment
 
@@ -119,4 +119,3 @@ EVENT_NAME)\
 [x] TEAMS_COMPOSITION(#**USER_ID**, #**TEAM_ID**, ROLE) [x] TEAMS(**ID**, NAME,
 DESCRIPTION, MATCH_COUNT, WIN_COUNT)\
 [x] TOKENS(**ACCESSHASH**, #USER_ID)
-
