@@ -179,11 +179,11 @@ router.get("/", async (ctx) => {
 
     const search = queryParams.search;
 
-    let users: Tournament[] = [];
+    let tournaments: Tournament[] = [];
     if (search == undefined || search == "") {
-        users = await GetTournaments(ctx.app.state.pool, limit, offset);
+        tournaments = await GetTournaments(ctx.app.state.pool, limit, offset);
     } else {
-        users = await SearchTournaments(ctx.app.state.pool, search, limit, offset);
+        tournaments = await SearchTournaments(ctx.app.state.pool, search, limit, offset);
     }
 
     let total = -1;
@@ -193,7 +193,7 @@ router.get("/", async (ctx) => {
         console.log(e);
     }
 
-    return SendJSONResponse(ctx, { users, total });
+    return SendJSONResponse(ctx, { tournaments, total });
 });
 
 router.get("/:id/teams", async (ctx) => {
