@@ -37,8 +37,8 @@ export async function CreateTournament(
     type: TournamentType,
     name: string,
     description: string,
-    start_date: Date,
-    end_date: Date,
+    start_date: Date | null,
+    end_date: Date | null,
     max_teams: number,
     game_name: string
 ): Promise<Tournament> {
@@ -116,7 +116,6 @@ export async function GetTournamentExactName(pool: Pool, name: string): Promise<
     client.release();
     return result.rows[0];
 }
-
 
 export async function UpdateTournament(
     pool: Pool,

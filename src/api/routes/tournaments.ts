@@ -62,8 +62,8 @@ router.post("/", async (ctx) => {
         body.type,
         body.name,
         body.description,
-        new Date(body.start_date),
-        new Date(body.end_date),
+        body.start_date ? new Date(body.start_date) : null,
+        body.start_date ? new Date(body.end_date) : null,
         body.max_teams,
         body.game_name
     );
