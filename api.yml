@@ -574,7 +574,14 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/user"
+                  type: object
+                  properties:
+                    user:
+                      $ref: "#/components/schemas/user"
+                    role:
+                      type: number
+                    team_id:
+                      type: number
         "400":
           $ref: "#/components/responses/400BadRequest"
         "401":

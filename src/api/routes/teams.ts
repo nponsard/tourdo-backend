@@ -62,7 +62,7 @@ router.patch("/:id", async (ctx) => {
 
     if (
         !user.admin &&
-        !members.some((member) => member.user_id == user.id && member.role == Role.LEADER)
+        !members.some((member) => member.user.id == user.id && member.role == Role.LEADER)
     )
         return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
@@ -91,7 +91,7 @@ router.delete("/:id", async (ctx) => {
 
     if (
         !user.admin &&
-        !members.some((member) => member.user_id == user.id && member.role == Role.LEADER)
+        !members.some((member) => member.user.id == user.id && member.role == Role.LEADER)
     )
         return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
@@ -106,6 +106,9 @@ router.get("/:id/users", async (ctx) => {
     if (isNaN(id)) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const members = await GetTeamMembers(ctx.app.state.pool, id);
+
+    console.log(members)
+
     if (!members) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
 
     return SendJSONResponse(ctx, members, 200);
@@ -130,14 +133,14 @@ router.put("/:id/users/:user_id", async (ctx) => {
 
     if (
         !user.admin &&
-        !members.some((member) => member.user_id == user.id && member.role == Role.LEADER)
+        !members.some((member) => member.user.id == user.id && member.role == Role.LEADER)
     )
         return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
     const body = await ParseBodyJSON<{ role: Role }>(ctx);
 
     // si on doit l’ajouter
-    if (!members.some((member) => member.user_id == user_id))
+    if (!members.some((member) => member.user.id == user_id))
         await AddTeamMember(ctx.app.state.pool, team_id, user_id, body.role);
 
     return SendJSONResponse(ctx, { message: "OK" }, 200);
@@ -163,7 +166,7 @@ router.delete("/:id/users/:user_id", async (ctx) => {
     // The user doing the requestg must be the leader of the team, an admin or the user to delete
     if (
         !user.admin &&
-        !members.some((member) => member.user_id == user.id && member.role == Role.LEADER) &&
+        !members.some((member) => member.user.id == user.id && member.role == Role.LEADER) &&
         user.id != user_id
     )
         return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);

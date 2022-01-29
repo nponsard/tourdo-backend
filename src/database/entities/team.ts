@@ -1,4 +1,5 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
+import { User } from "./user.ts";
 
 export enum Role {
     PLAYER = 0,
@@ -14,7 +15,7 @@ export interface Team {
     win_count: number;
 }
 export interface TeamMember {
-    user_id: number;
+    user: User;
     team_id: number;
     role: Role;
 }
@@ -89,13 +90,34 @@ export async function DeleteTeam(db: Pool, id: number): Promise<Team> {
 export async function GetTeamMembers(db: Pool, team_id: number): Promise<TeamMember[]> {
     const client = await db.connect();
 
-    const result = await client.queryObject<TeamMember>(
-        "SELECT user_id,team_id,role FROM teams_composition WHERE team_id = $1",
+    const result = await client.queryObject<{
+        team_id: number;
+        role: Role;
+        id: number;
+        username: string;
+        admin: boolean;
+    }>(
+        "SELECT team_id, role,  users.* FROM teams_composition join users on user_id = users.id WHERE team_id = $1",
         team_id
     );
 
     client.release();
-    return result.rows;
+
+    const out: TeamMember[] = [];
+
+    for (const row of result.rows) {
+        out.push({
+            user: {
+                id: row.id,
+                username: row.username,
+                admin: row.admin,
+            },
+            team_id: row.team_id,
+            role: row.role,
+        });
+    }
+
+    return out;
 }
 
 export async function AddTeamMember(
