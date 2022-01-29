@@ -147,6 +147,21 @@ router.patch("/:id", async (ctx) => {
         status?: TournamentStatus;
     }>(ctx);
 
+    if (body.name && body.name.length < 3)
+        return SendJSONResponse(ctx, { message: "Invalid name" }, 400);
+
+    // check availability of name
+
+    if (body.name && body.name !== old_tournament.name) {
+        const exists = await GetTournamentExactName(ctx.app.state.pool, body.name);
+
+        if (exists)
+            return SendJSONResponse(
+                ctx,
+                { message: "Tournament with this name already exists" },
+                409
+            );
+    }
     const newTournament = old_tournament;
 
     // update fields

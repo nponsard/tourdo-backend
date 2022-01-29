@@ -52,7 +52,9 @@ router.get("/:id", async (ctx) => {
 });
 
 router.patch("/:id", async (ctx) => {
-    if (ctx.params.id == undefined) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+    const team_id = parseInt(ctx.params.id, 10);
+
+    if (isNaN(team_id)) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const user = await GetUserWithAccessToken(
         ctx.app.state.pool,
@@ -61,7 +63,7 @@ router.patch("/:id", async (ctx) => {
 
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
-    const body = await ParseBodyJSON<{ name: string; description: string }>(ctx);
+    const body = await ParseBodyJSON<{ name?: string; description?: string }>(ctx);
 
     const members = await GetTeamMembers(ctx.app.state.pool, parseInt(ctx.params.id, 10));
     if (!members) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
@@ -72,11 +74,21 @@ router.patch("/:id", async (ctx) => {
     )
         return SendJSONResponse(ctx, { message: "Forbidden, must be leader or admin" }, 403);
 
+    const oldTeam = await GetTeam(ctx.app.state.pool, team_id);
+
+    // check availability
+
+    if (body.name && body.name !== oldTeam.name) {
+        const exists = await GetTeamByName(ctx.app.state.pool, body.name);
+
+        if (exists && exists.name === body.name)
+            return SendJSONResponse(ctx, { message: "Team already exists" }, 409);
+    }
     const updatedTeam = await UpdateTeam(
         ctx.app.state.pool,
         parseInt(ctx.params.id, 10),
-        body.name,
-        body.description
+        body.name ?? oldTeam.name,
+        body.description ?? oldTeam.description
     );
 
     SendJSONResponse(ctx, updatedTeam, 200);
