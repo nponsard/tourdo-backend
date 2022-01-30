@@ -98,10 +98,10 @@ paths:
             schema:
               type: object
               properties:
-                oldPassword:
+                old_password:
                   type: string
                   description: Old password
-                newPassword:
+                new_password:
                   type: string
                   description: New password
       responses:

@@ -132,23 +132,23 @@ router.patch("/me", async (ctx) => {
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
     const body = await ParseBodyJSON<{
-        oldPassword: string;
-        newPassword: string;
+        old_password: string;
+        new_password: string;
     }>(ctx);
 
-    if (body.newPassword == body.oldPassword)
+    if (body.new_password == body.old_password)
         return SendJSONResponse(ctx, { message: "New password is the same" }, 400);
 
     const userAuth = await GetUserAuthByUsername(ctx.app.state.pool, user.username);
 
-    if (!(await bcrypt.compare(body.oldPassword, userAuth.password)))
+    if (!(await bcrypt.compare(body.old_password, userAuth.password)))
         return SendJSONResponse(ctx, { message: "Wrong password" }, 400);
 
     try {
         await UpdateUser(
             ctx.app.state.pool,
             user.id,
-            await bcrypt.hash(body.newPassword),
+            await bcrypt.hash(body.new_password),
             user.admin
         );
     } catch (e) {
