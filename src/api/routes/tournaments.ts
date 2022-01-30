@@ -232,8 +232,9 @@ router.get("/:id/teams", async (ctx) => {
     SendJSONResponse(ctx, teams, 200);
 });
 
-router.put("/:id/teams", async (ctx) => {
+router.put("/:id/teams/:team_id", async (ctx) => {
     const tournament_id = parseInt(ctx.params.id, 10);
+    const team_id = parseInt(ctx.params.team_id, 10);
 
     const user = await GetUserWithAccessToken(
         ctx.app.state.pool,
@@ -242,7 +243,8 @@ router.put("/:id/teams", async (ctx) => {
 
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
-    if (isNaN(tournament_id)) return SendJSONResponse(ctx, { message: "Invalid id" }, 400);
+    if (isNaN(tournament_id) || isNaN(team_id))
+        return SendJSONResponse(ctx, { message: "Invalid id" }, 400);
 
     const organizers = await GetTournamentOrganizers(ctx.app.state.pool, tournament_id);
 
@@ -263,12 +265,12 @@ router.put("/:id/teams", async (ctx) => {
     if (tournament.max_teams !== undefined && tournament.max_teams <= teams.length)
         return SendJSONResponse(ctx, { message: "Tournament already has max teams" }, 400);
 
-    const body = await ParseBodyJSON<{
-        team_id: number;
-        team_number: number;
-    }>(ctx);
 
-    const team = await AddTournamentTeam(ctx.app.state.pool, tournament_id, body.team_id);
+    const team = await AddTournamentTeam(
+        ctx.app.state.pool,
+        tournament_id,
+        team_id
+    );
 
     SendJSONResponse(ctx, team, 200);
 });

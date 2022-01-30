@@ -1098,46 +1098,7 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-    put:
-      summary: Create a team in a tournament
-      description: must be admin or organizer of the tournament
-      tags:
-        - "tournaments"
-      security:
-        - jwt: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: number
-      requestBody:
-        description: Team info
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                team_id:
-                  type: number
-                team_number:
-                  type: number
-                  nullable: true
-      responses:
-        "200":
-          description: Team added
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/message"
-        "400":
-          $ref: "#/components/responses/400BadRequest"
-        "401":
-          $ref: "#/components/responses/401Unauthorized"
-        "403":
-          $ref: "#/components/responses/403Forbidden"
-        "500":
-          $ref: "#/components/responses/500InternalServerError"
+
   /tournaments/{id}/teams/shuffle:
     post:
       summary: Shuffle teams of a tournament
@@ -1226,6 +1187,39 @@ paths:
           $ref: "#/components/responses/500InternalServerError"
 
   /tournaments/{id}/teams/{team_id}:
+    put:
+      summary: Add a team in a tournament
+      description: must be admin or organizer of the tournament
+      tags:
+        - "tournaments"
+      security:
+        - jwt: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+        - name: team_id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Team added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/message"
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
     delete:
       summary: Delete a team from a tournament
       description: must be admin or organizer of the tournament

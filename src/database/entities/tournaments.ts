@@ -228,14 +228,12 @@ export async function AddTournamentTeam(
     pool: Pool,
     tournament_id: number,
     team_id: number,
-    team_number?: number
 ): Promise<void> {
     const client = await pool.connect();
     await client.queryObject(
-        `INSERT INTO tournaments_participants(tournament_id, team_id,team_number) VALUES($1,$2, $3)`,
+        `INSERT INTO tournaments_participants(tournament_id, team_id) VALUES($1,$2)`,
         tournament_id,
         team_id,
-        team_number
     );
 
     client.release();
