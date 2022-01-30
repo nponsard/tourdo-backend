@@ -15,10 +15,19 @@ begin
 
     mode = 1;
     if tg_op = 'DELETE' then
+        -- return if one of the teams is undefined
+        if (new.team1_id is null) or (new.team2_id is null) then
+            return new;
+        end if;
+
         mode = -1;
         t1_id = old.team1_id;
         t2_id = old.team2_id;
     else
+        -- return if one of the teams is undefined
+        if (new.team1_id is null) or (new.team2_id is null) then
+            return new;
+        end if;
         t1_id = new.team1_id;
         t2_id = new.team2_id;
     end if;
