@@ -265,14 +265,17 @@ router.put("/:id/teams/:team_id", async (ctx) => {
     if (tournament.max_teams !== undefined && tournament.max_teams <= teams.length)
         return SendJSONResponse(ctx, { message: "Tournament already has max teams" }, 400);
 
+    try {
+        const team = await AddTournamentTeam(ctx.app.state.pool, tournament_id, team_id);
+        SendJSONResponse(ctx, team, 200);
+    } catch (e) {
+        console.log(e);
 
-    const team = await AddTournamentTeam(
-        ctx.app.state.pool,
-        tournament_id,
-        team_id
-    );
+        let message = JSON.stringify(e);
+        if (e.message && typeof e.message === "string") message = e.message;
 
-    SendJSONResponse(ctx, team, 200);
+        SendJSONResponse(ctx, { message }, 409);
+    }
 });
 
 router.post("/:id/teams/shuffle", async (ctx) => {
