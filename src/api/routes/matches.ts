@@ -58,12 +58,12 @@ router.patch("/:id", async (ctx) => {
         status?: number;
     }>(ctx);
 
-    if (body.team1_id) match.team1_id = body.team1_id;
-    if (body.team2_id) match.team2_id = body.team2_id;
-    if (body.date) match.date = new Date(body.date);
-    if (body.row) match.row = body.row;
-    if (body.column) match.column = body.column;
-    if (body.status) match.status = body.status;
+    if (body.team1_id !== undefined) match.team1_id = body.team1_id;
+    if (body.team2_id !== undefined) match.team2_id = body.team2_id;
+    if (body.date !== undefined) match.date = new Date(body.date);
+    if (body.row !== undefined) match.row = body.row;
+    if (body.column !== undefined) match.column = body.column;
+    if (body.status !== undefined) match.status = body.status;
 
     await UpdateMatch(
         ctx.app.state.pool,
