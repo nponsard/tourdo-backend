@@ -16,7 +16,7 @@ begin
     mode = 1;
     if tg_op = 'DELETE' then
         -- return if one of the teams is undefined
-        if (new.team1_id is null) or (new.team2_id is null) then
+        if (old.team1_id is null) or (old.team2_id is null) then
             return new;
         end if;
 
@@ -25,21 +25,23 @@ begin
         t2_id = old.team2_id;
     else
         -- return if one of the teams is undefined
-        if (new.team1_id is null) or (new.team2_id is null) then
+        if new.team1_id is null or new.team2_id is null then
             return new;
+        else
+            t1_id = new.team1_id;
+            t2_id = new.team2_id;
         end if;
-        t1_id = new.team1_id;
-        t2_id = new.team2_id;
+
     end if;
 
     select match_count, win_count
     from teams
-    where team1_id = t1_id
+    where id = t1_id
     into team1_total,team1_wins;
 
     select match_count, win_count
     from teams
-    where team2_id = t2_id
+    where id = t2_id
     into team2_total,team2_wins;
 
     if new.status = 1 then -- team 1 won
@@ -57,7 +59,7 @@ begin
         update teams set win_count = team2_wins, match_count = team2_total where id = t2_id;
     end if;
 
-
+    return  new;
 end
 $$;
 
