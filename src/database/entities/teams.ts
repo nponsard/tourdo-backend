@@ -220,7 +220,7 @@ export async function GetTournamentsOfTeam(db: Pool, team_id: number): Promise<T
     const client = await db.connect();
 
     const result = await client.queryObject<Tournament>(
-        "SELECT tournaments.* FROM tournaments_composition join tournaments on tournament_id = tournaments.id WHERE team_id = $1",
+        "SELECT tournaments.* FROM tournaments_participants join tournaments on tournament_id = tournaments.id WHERE team_id = $1",
         team_id
     );
 
