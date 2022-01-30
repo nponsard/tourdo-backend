@@ -14,7 +14,7 @@ create table if not exists matches
     tournament_id integer not null
         constraint matches_tournament_id_fk
             references tournaments  on delete cascade,
-    status     int,
+    status     int default 0,
     date          timestamp
 );
 
