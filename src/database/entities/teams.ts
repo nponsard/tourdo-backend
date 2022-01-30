@@ -1,4 +1,5 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
+import { Tournament } from "./tournaments.ts";
 import { User } from "./user.ts";
 
 export enum Role {
@@ -213,4 +214,16 @@ export async function GetTeamByName(db: Pool, name: string): Promise<Team> {
 
     client.release();
     return result.rows[0];
+}
+
+export async function GetTournamentsOfTeam(db: Pool, team_id: number): Promise<Tournament[]> {
+    const client = await db.connect();
+
+    const result = await client.queryObject<Tournament>(
+        "SELECT tournaments.* FROM tournaments_composition join tournaments on tournament_id = tournaments.id WHERE team_id = $1",
+        team_id
+    );
+
+    client.release();
+    return result.rows;
 }

@@ -36,12 +36,28 @@ begin
     if new.status >= 1 and new.status <= 3 then -- if a team won or it’s a draw
 
     -- recalculate match counts
-        select count(distinct (id)) into team1_total from matches where (team1_id = t1_id or team2_id = t1_id) and status > 0;
-        select count(distinct (id)) into team2_total from matches where (team1_id = t2_id or team2_id = t2_id) and status > 0;
+        select COALESCE(count(distinct (id)), 0)
+        into team1_total
+        from matches
+        where (team1_id = t1_id or team2_id = t1_id)
+          and status > 0;
+        select COALESCE(count(distinct (id)), 0)
+        into team2_total
+        from matches
+        where (team1_id = t2_id or team2_id = t2_id)
+          and status > 0;
 
         -- recalculate win counts
-        select count(distinct (id)) into team1_total from matches where (team1_id = t1_id and status = 1) or (team2_id = t1_id and status = 2);
-        select count(distinct (id)) into team2_total from matches where (team1_id = t2_id and status = 1) or (team2_id = t2_id and status = 2);
+        select COALESCE(count(distinct (id)), 0)
+        into team1_total
+        from matches
+        where (team1_id = t1_id and status = 1)
+           or (team2_id = t1_id and status = 2);
+        select COALESCE(count(distinct (id)), 0)
+        into team2_total
+        from matches
+        where (team1_id = t2_id and status = 1)
+           or (team2_id = t2_id and status = 2);
 
         update teams set win_count = team1_wins, match_count = team1_total where id = t1_id;
         update teams set win_count = team2_wins, match_count = team2_total where id = t2_id;

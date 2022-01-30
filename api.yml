@@ -555,6 +555,40 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
+  /teams/{id}/tournaments:
+    get:
+      summary: Get all tournaments of a team
+      tags:
+        - "teams"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Tournaments found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tournaments:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/tournament"
+                  total:
+                    type: number
+                    description: Total number of tournaments
+        "400":
+          $ref: "#/components/responses/400BadRequest"
+        "401":
+          $ref: "#/components/responses/401Unauthorized"
+        "403":
+          $ref: "#/components/responses/403Forbidden"
+        "500":
+          $ref: "#/components/responses/500InternalServerError"
   /teams/{id}/users:
     get:
       summary: Get all players of a team

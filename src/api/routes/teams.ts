@@ -12,12 +12,13 @@ import {
     GetTeamMembers,
     GetTeams,
     GetTeamsCount,
+    GetTournamentsOfTeam,
     RemoveTeamMember,
     Role,
     SearchTeams,
     Team,
     UpdateTeam,
-} from "../../database/entities/team.ts";
+} from "../../database/entities/teams.ts";
 import { getQuery } from "https://deno.land/x/oak@v10.1.0/helpers.ts";
 
 const router = new Router({ prefix: `${Prefix}/teams` });
@@ -220,5 +221,19 @@ router.get("/", async (ctx) => {
 
     return SendJSONResponse(ctx, { teams, total });
 });
+router.get("/:id/tournaments", async (ctx) => {
+    const team_id = parseInt(ctx.params.id, 10);
+
+    if (isNaN(team_id)) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
+
+    const members = await GetTeamMembers(ctx.app.state.pool, team_id);
+    if (!members) return SendJSONResponse(ctx, { message: "Team not found" }, 404);
+
+    const tournaments = await GetTournamentsOfTeam(ctx.app.state.pool, team_id);
+
+    return SendJSONResponse(ctx, tournaments, 200);
+
+})
+
 
 export { router as Teams };
