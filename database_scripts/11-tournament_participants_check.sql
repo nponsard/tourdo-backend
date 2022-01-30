@@ -25,7 +25,7 @@ begin
                         (select team_id from tournaments_participants where tournament_id = new.tournament_id))
           );
     if count > 0 then
-        raise 'team % can’t join, % members are already in the tournament', new.team_id, count;
+        raise 'team % can’t join, % member(s) already in the tournament', new.team_id, count;
     end if;
     return new;
 end
