@@ -1,4 +1,4 @@
-import { Team } from "../database/entities/team.ts";
+import { Team } from "../database/entities/teams.ts";
 
 export function ShuffleTournamentTeams(
     teams: { team: Team }[]

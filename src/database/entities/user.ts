@@ -1,5 +1,5 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
-import { Team } from "./team.ts";
+import { Team } from "./teams.ts";
 
 export interface UserAuth {
     id: number;

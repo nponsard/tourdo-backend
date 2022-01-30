@@ -1,6 +1,6 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/pool.ts";
 import { Match } from "./matches.ts";
-import { Team } from "./team.ts";
+import { Team } from "./teams.ts";
 import { User } from "./user.ts";
 
 export enum TournamentType {

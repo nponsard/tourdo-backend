@@ -1,4 +1,4 @@
-import { Team } from "../database/entities/team.ts";
+import { Team } from "../database/entities/teams.ts";
 import { Tournament, TournamentTeam, TournamentType } from "../database/entities/tournaments.ts";
 
 export function GenerateMatches(
