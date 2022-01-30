@@ -15,8 +15,7 @@ create table if not exists matches
         constraint matches_tournament_id_fk
             references tournaments  on delete cascade,
     status     int,
-    date          timestamp,
-    unique(tournament_id, row, "column")
+    date          timestamp
 );
 
 create unique index if not exists matches_id_uindex
