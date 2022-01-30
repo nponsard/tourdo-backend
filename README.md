@@ -3,6 +3,14 @@
 Backend for woa tournament app
 
 ## TODO :
+- check max_teams on tournament edition/creation
+- comments
+
+
+
+
+
+
 
 -   get tournaments of team
 
