@@ -13,7 +13,6 @@ declare
     t2_id       int;
 begin
 
-    mode = 1;
     if tg_op = 'DELETE' then
         -- return if one of the teams is undefined
         if (old.team1_id is null) or (old.team2_id is null) then
@@ -34,32 +33,21 @@ begin
 
     end if;
 
-    select match_count, win_count
-    from teams
-    where id = t1_id
-    into team1_total,team1_wins;
-
-    select match_count, win_count
-    from teams
-    where id = t2_id
-    into team2_total,team2_wins;
-
-    if new.status = 1 then -- team 1 won
-        team1_wins = team1_wins + mode;
-    end if;
-    if new.status = 2 then -- team 2 won
-        team2_wins = team2_wins + mode;
-    end if;
-
     if new.status >= 1 and new.status <= 3 then -- if a team won or it’s a draw
-        team1_total = team1_total + mode;
-        team2_total = team2_total + mode;
+
+    -- recalculate match counts
+        select count(distinct (id)) into team1_total from matches where (team1_id = t1_id or team2_id = t1_id) and status > 0;
+        select count(distinct (id)) into team2_total from matches where (team1_id = t2_id or team2_id = t2_id) and status > 0;
+
+        -- recalculate win counts
+        select count(distinct (id)) into team1_total from matches where (team1_id = t1_id and status = 1) or (team2_id = t1_id and status = 2);
+        select count(distinct (id)) into team2_total from matches where (team1_id = t2_id and status = 1) or (team2_id = t2_id and status = 2);
 
         update teams set win_count = team1_wins, match_count = team1_total where id = t1_id;
         update teams set win_count = team2_wins, match_count = team2_total where id = t2_id;
     end if;
 
-    return  new;
+    return new;
 end
 $$;
 
