@@ -263,7 +263,7 @@ router.put("/:id/teams/:team_id", async (ctx) => {
     if (tournament.status !== TournamentStatus.Created)
         return SendJSONResponse(
             ctx,
-            { message: "Tournament already generated, can’t add new teams" },
+            { message: "Tournament already generated, can't add new teams" },
             400
         );
 

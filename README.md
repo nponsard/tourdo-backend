@@ -5,6 +5,8 @@ Backend for woa tournament app
 ## TODO :
 - comments
 - sample db data
+- trim username
+- 
 
 
 
