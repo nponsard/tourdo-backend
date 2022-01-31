@@ -32,17 +32,19 @@ const router = new Router({ prefix: `${Prefix}/users` });
 router.post("/register", async (ctx) => {
     const body = await ParseBodyJSON<{ password: string; username: string }>(ctx);
 
+    const username = body.username.trim();
+
     if (body.password.length < 8) SendJSONResponse(ctx, { message: "Password too short" }, 400);
-    if (body.username.length < 3) SendJSONResponse(ctx, { message: "Username too short" }, 400);
+    if (username.length < 3) SendJSONResponse(ctx, { message: "Username too short" }, 400);
 
     try {
-        const used = await GetUserByUsername(ctx.app.state.pool, body.username);
+        const used = await GetUserByUsername(ctx.app.state.pool, username);
         if (used) {
             return SendJSONResponse(ctx, { message: "User already exists" }, 409);
         }
         const user = await CreateUser(
             ctx.app.state.pool,
-            body.username,
+            username,
             await bcrypt.hash(body.password)
         );
         console.log(user);
@@ -77,9 +79,11 @@ router.post("/logout", async (ctx) => {
 router.post("/login", async (ctx) => {
     const body = await ParseBodyJSON<{ password: string; username: string }>(ctx);
 
+    const username = body.username.trim();
+
     // check login
 
-    const user = await GetUserAuthByUsername(ctx.app.state.pool, body.username);
+    const user = await GetUserAuthByUsername(ctx.app.state.pool, username);
 
     console.log(user);
 
