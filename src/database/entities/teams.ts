@@ -197,7 +197,7 @@ export async function SearchTeams(
     const client = await db.connect();
 
     const result = await client.queryObject<Team>(
-        "SELECT * FROM teams WHERE name LIKE '%' || $1 || '%'  ORDER BY id DESC  LIMIT $2 OFFSET $3",
+        "SELECT * FROM teams WHERE LOWER(name) LIKE '%' || LOWER($1) || '%'  ORDER BY id DESC  LIMIT $2 OFFSET $3",
         search,
         limit,
         offset

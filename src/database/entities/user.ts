@@ -140,7 +140,7 @@ export async function SearchUsers(
 ): Promise<User[]> {
     const client = await db.connect();
     const result = await client.queryObject<User>(
-        "SELECT id,username, admin FROM users WHERE username LIKE '%' || $1 || '%'  ORDER BY id DESC LIMIT $2 OFFSET $3",
+        "SELECT id,username, admin FROM users WHERE LOWER(username) LIKE '%' || LOWER($1) || '%'  ORDER BY id DESC LIMIT $2 OFFSET $3",
         search,
         limit,
         offset
