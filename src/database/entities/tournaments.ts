@@ -306,7 +306,7 @@ export async function RemoveOrganizer(
 export async function GetTournamentOrganizers(pool: Pool, tournament_id: number): Promise<User[]> {
     const client = await pool.connect();
     const result = await client.queryObject<User>(
-        `SELECT users.* FROM users JOIN tournaments_organizers ON users.id = tournaments_organizers.user_id WHERE tournaments_organizers.tournament_id = $1`,
+        `SELECT users.id, users.username, users.admin FROM users JOIN tournaments_organizers ON users.id = tournaments_organizers.user_id WHERE tournaments_organizers.tournament_id = $1`,
         tournament_id
     );
 

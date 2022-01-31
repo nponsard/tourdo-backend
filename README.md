@@ -6,7 +6,6 @@ Backend for woa tournament app
 - check max_teams on tournament edition/creation
 - comments
 - don’t send the password field when users are requested
-- search : tolower
 
 
 

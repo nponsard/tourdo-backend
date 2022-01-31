@@ -98,7 +98,7 @@ export async function GetTeamMembers(db: Pool, team_id: number): Promise<TeamMem
         username: string;
         admin: boolean;
     }>(
-        "SELECT team_id, role,  users.* FROM teams_composition join users on user_id = users.id WHERE team_id = $1 ORDER BY role DESC",
+        "SELECT team_id, role,  users.id, users.admin, users.username FROM teams_composition join users on user_id = users.id WHERE team_id = $1 ORDER BY role DESC",
         team_id
     );
 
