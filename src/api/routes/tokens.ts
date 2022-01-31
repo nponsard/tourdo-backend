@@ -57,8 +57,8 @@ router.post("/refresh", async (ctx) => {
 
     try {
         SendJSONResponse(ctx, {
-            accessToken: newTokens.accessJWT,
-            refreshToken: newTokens.refreshJWT,
+            access_token: newTokens.accessJWT,
+            refresh_token: newTokens.refreshJWT,
         });
 
         try {
