@@ -1,10 +1,11 @@
 import { create, verify } from "https://deno.land/x/djwt@v2.4/mod.ts";
-const defaultKey = `Wzc4LDE5NCwxNzUsMjQ0LDEzNywxMCwyMDcsMTk4LDcyLDYwLDUxLDIzNSwxNDgsMjAzLDI1MCwxMjEsNiwyMzYsODksMTQ1LDEwMiwyMjYsMTIsMjM3LDM3LDY5LDEwNCwxODEsMzQsMTI2LDI1MywyMDYsNDEsMTE1LDEzOCwxMTUsMTcyLDIzNSwxMjAsMjE4LDI1MiwyMjgsODIsNzMsNzMsMTc3LDE0LDEwNiw4NSw3OCwxMzIsMTA3LDEwOCw4NSwyNTMsMTgxLDE0MywyMjUsMzgsMCwxMDcsMjIxLDYsNTcsMjExLDIyMSwxMTYsMTU3LDQyLDM2LDc3LDExOSwxOTYsODIsNSwxNjAsMTY0LDE2OCwyMTEsNTMsNSwyMzgsMCwxMzAsMTEyLDEzMCwzMSwxNDYsMTg3LDIwNiwxMzEsMjQ5LDE3OCwxMTksMTI2LDc1LDIxMSwxNDcsMTYwLDc2LDE1MiwxNDUsMTE0LDM4LDExNSwyNiwxMzQsNzIsMjUsMjQ4LDEyNSwyMDEsMjAsNTEsMjYsMTEyLDk5LDExNCwxMTksMzYsMjM2LDc0LDgzLDc0LDI5LDcyLDIyMyw2Nl0=`;
+//const defaultKey = `Wzc4LDE5NCwxNzUsMjQ0LDEzNywxMCwyMDcsMTk4LDcyLDYwLDUxLDIzNSwxNDgsMjAzLDI1MCwxMjEsNiwyMzYsODksMTQ1LDEwMiwyMjYsMTIsMjM3LDM3LDY5LDEwNCwxODEsMzQsMTI2LDI1MywyMDYsNDEsMTE1LDEzOCwxMTUsMTcyLDIzNSwxMjAsMjE4LDI1MiwyMjgsODIsNzMsNzMsMTc3LDE0LDEwNiw4NSw3OCwxMzIsMTA3LDEwOCw4NSwyNTMsMTgxLDE0MywyMjUsMzgsMCwxMDcsMjIxLDYsNTcsMjExLDIyMSwxMTYsMTU3LDQyLDM2LDc3LDExOSwxOTYsODIsNSwxNjAsMTY0LDE2OCwyMTEsNTMsNSwyMzgsMCwxMzAsMTEyLDEzMCwzMSwxNDYsMTg3LDIwNiwxMzEsMjQ5LDE3OCwxMTksMTI2LDc1LDIxMSwxNDcsMTYwLDc2LDE1MiwxNDUsMTE0LDM4LDExNSwyNiwxMzQsNzIsMjUsMjQ4LDEyNSwyMDEsMjAsNTEsMjYsMTEyLDk5LDExNCwxMTksMzYsMjM2LDc0LDgzLDc0LDI5LDcyLDIyMyw2Nl0=`;
 
-const secret = Deno.env.get("JWT_KEY") || defaultKey;
+const secret = Deno.env.get("JWT_KEY");
 
-if (secret === defaultKey) {
-    console.error("JWT_KEY is unsecure and should be changed");
+if (!secret || secret.length < 10) {
+    console.error("JWT_KEY not set");
+    Deno.exit(1);
 }
 
 // import keys
@@ -15,13 +16,10 @@ try {
     const json = JSON.parse(atob(secret));
 
     const arr = Uint8Array.from(json);
-    key = await crypto.subtle.importKey(
-        "raw",
-        arr,
-        { name: "HMAC", hash: "SHA-512" },
-        true,
-        ["sign", "verify"]
-    );
+    key = await crypto.subtle.importKey("raw", arr, { name: "HMAC", hash: "SHA-512" }, true, [
+        "sign",
+        "verify",
+    ]);
     // ecPrivatekey = await importJWK(json.exportedPrivate);
 } catch (e) {
     console.error("Can’t import JWK", e);
@@ -29,11 +27,7 @@ try {
 }
 
 export function SignToken(id: number, token: string, expirationTime: number) {
-    return create(
-        { alg: "HS512", typ: "jwt" },
-        { id, token, exp: expirationTime },
-        key
-    );
+    return create({ alg: "HS512", typ: "jwt" }, { id, token, exp: expirationTime }, key);
 }
 
 export function DecodeJWT(jwt: string) {
