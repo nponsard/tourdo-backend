@@ -16,22 +16,26 @@ const router = new Router({ prefix: `${Prefix}/tokens` });
 router.post("/refresh", async (ctx) => {
     const request = await ParseBodyJSON<{ refresh_token: string }>(ctx);
 
-    const decoded = await DecodeJWT(request.refresh_token);
+    let decoded = null;
 
+    try {
+        decoded = await DecodeJWT(request.refresh_token);
+    } catch (e) {
+        console.log(e);
+        return SendJSONResponse(ctx, { message: "Invalid refresh token" }, 400);
+    }
+
+    if (!decoded) return SendJSONResponse(ctx, { message: "Invalid refresh token" }, 400);
     if (!(typeof decoded.token === "string")) throw new Error("Invalid token");
 
     if (!(typeof decoded.id === "number")) throw new Error("Invalid token");
 
-    const tokens = await GetTokensWithRefreshToken(
-        ctx.app.state.pool,
-        decoded.token
-    );
+    const tokens = await GetTokensWithRefreshToken(ctx.app.state.pool, decoded.token);
 
     if (
         !tokens ||
         decoded.id != tokens.user_id ||
-        tokens.refresh_token_expiration.getTime() <
-            Date.now() /* invalid if expired  */
+        tokens.refresh_token_expiration.getTime() < Date.now() /* invalid if expired  */
     )
         throw new Error("Invalid token");
 
@@ -64,11 +68,7 @@ router.post("/refresh", async (ctx) => {
         }
     } catch (e) {
         console.log("refreshToken : ", e);
-        SendJSONResponse(
-            ctx,
-            { message: "Critical error occured (json serialisation)" },
-            500
-        );
+        SendJSONResponse(ctx, { message: "Critical error occured (json serialisation)" }, 500);
     }
 });
 
