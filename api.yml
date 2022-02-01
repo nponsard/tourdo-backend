@@ -98,10 +98,10 @@ paths:
             schema:
               type: object
               properties:
-                oldPassword:
+                old_password:
                   type: string
                   description: Old password
-                newPassword:
+                new_password:
                   type: string
                   description: New password
       responses:
@@ -303,9 +303,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  accessToken:
+                  access_token:
                     type: string
-                  refreshToken:
+                  refresh_token:
                     type: string
         "400":
           $ref: "#/components/responses/400BadRequest"
@@ -353,7 +353,7 @@ paths:
             schema:
               type: object
               properties:
-                refreshToken:
+                refresh_token:
                   type: string
       responses:
         "200":
@@ -363,9 +363,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  accessToken:
+                  access_token:
                     type: string
-                  refreshToken:
+                  refresh_token:
                     type: string
         "400":
           $ref: "#/components/responses/400BadRequest"
@@ -614,7 +614,7 @@ paths:
                       $ref: "#/components/schemas/user"
                     role:
                       type: number
-                    teamID:
+                    team_id:
                       type: number
         "400":
           $ref: "#/components/responses/400BadRequest"
@@ -624,7 +624,7 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-  /teams/{id}/users/{userID}:
+  /teams/{id}/users/{userId}:
     put:
       summary: Add a player to a team
       description: Add a player to a team, the user must be admin or captain of the team
@@ -638,7 +638,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: userID
+        - name: userId
           in: path
           required: true
           schema:
@@ -681,7 +681,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: userID
+        - name: userId
           in: path
           required: true
           schema:
@@ -703,9 +703,49 @@ paths:
           $ref: "#/components/responses/500InternalServerError"
 
   /matches:
+    # get:
+    #   summary: Get a list of matches
+    #   tags:
+    #     - "matches"
+    #   parameters:
+    #     - in: query
+    #       name: limit
+    #       schema:
+    #         type: number
+    #       description: Number of matches to return
+    #       required: false
+    #     - in: query
+    #       name: offset
+    #       schema:
+    #         type: number
+    #       description: Offset of the matches to return, default 0
+    #       required: false
+    #     - in: query
+    #       name: status
+    #       schema:
+    #         type: string
+    #       description: Status of the matches to return, default all
+    #       required: false
+    #   responses:
+    #     "200":
+    #       description: Matches found
+    #       content:
+    #         application/json:
+    #           schema:
+    #             type: array
+    #             items:
+    #               $ref: "#/components/schemas/match"
+    #     "400":
+    #       $ref: "#/components/responses/400BadRequest"
+    #     "401":
+    #       $ref: "#/components/responses/401Unauthorized"
+    #     "403":
+    #       $ref: "#/components/responses/403Forbidden"
+    #     "500":
+    #       $ref: "#/components/responses/500InternalServerError"
     post:
       summary: Create a match
-      description: Create a match, if tournamentID is specified, the user must be a tournament organizer or an admin and must specify the row and column of the match
+      description: Create a match, if tournament_id is specified, the user must be a tournament organizer or an admin and must specify the row and column of the match
       tags:
         - "matches"
       security:
@@ -723,7 +763,7 @@ paths:
                   type: number
                 date:
                   type: string
-                tournamentID:
+                tournament_id:
                   type: number
                   nullable: true
                 row:
@@ -804,7 +844,7 @@ paths:
           $ref: "#/components/responses/500InternalServerError"
     patch:
       summary: Update a match
-      description: Update a match, the user must be admin or organizer of the tournament, if changing the tournamentID, the user must be admin or organizer of both
+      description: Update a match, the user must be admin or organizer of the tournament, if changing the tournament_id, the user must be admin or organizer of both
       tags:
         - "matches"
       security:
@@ -822,10 +862,10 @@ paths:
             schema:
               type: object
               properties:
-                team1ID:
+                team1_id:
                   type: number
                   nullable: true
-                team2ID:
+                team2_id:
                   type: number
                   nullable: true
                 date:
@@ -923,15 +963,15 @@ paths:
                   type: number
                 name:
                   type: string
-                startDate:
+                start_date:
                   type: string
-                endDate:
+                end_date:
                   type: string
                 description:
                   type: string
-                maxTeams:
+                max_teams:
                   type: number
-                gameName:
+                game_name:
                   type: string
 
       responses:
@@ -1025,19 +1065,19 @@ paths:
                 name:
                   type: string
                   nullable: true
-                startDate:
+                start_date:
                   type: string
                   nullable: true
-                endDate:
+                end_date:
                   type: string
                   nullable: true
                 description:
                   type: string
                   nullable: true
-                maxTeams:
+                max_teams:
                   type: number
                   nullable: true
-                gameName:
+                game_name:
                   type: string
                   nullable: true
                 status:
@@ -1180,7 +1220,7 @@ paths:
         "500":
           $ref: "#/components/responses/500InternalServerError"
 
-  /tournaments/{id}/teams/{teamID}:
+  /tournaments/{id}/teams/{team_id}:
     put:
       summary: Add a team in a tournament
       description: must be admin or organizer of the tournament
@@ -1194,7 +1234,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: teamID
+        - name: team_id
           in: path
           required: true
           schema:
@@ -1227,7 +1267,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: teamID
+        - name: team_id
           in: path
           required: true
           schema:
@@ -1260,7 +1300,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: teamID
+        - name: team_id
           in: path
           required: true
           schema:
@@ -1318,7 +1358,7 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-  /tournaments/{id}/organizers/{userID}:
+  /tournaments/{id}/organizers/{user_id}:
     put:
       summary: Add an organizer to a tournament
       description: must be admin or organizer of the tournament
@@ -1332,7 +1372,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: userID
+        - name: user_id
           in: path
           required: true
           schema:
@@ -1365,7 +1405,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: userID
+        - name: user_id
           in: path
           required: true
           schema:
@@ -1446,9 +1486,9 @@ components:
           type: string
         description:
           type: string
-        winCount:
+        win_count:
           type: number
-        matchCount:
+        match_count:
           type: number
     match:
       type: object
@@ -1456,9 +1496,9 @@ components:
       properties:
         id:
           type: number
-        team1ID:
+        team_1_id:
           type: number
-        team2ID:
+        team_2_id:
           type: number
         row:
           type: number
@@ -1466,7 +1506,7 @@ components:
         column:
           type: number
           nullable: true
-        tournamentID:
+        tournament_id:
           type: number
           nullable: true
         winner_id:
@@ -1484,17 +1524,17 @@ components:
           type: number
         name:
           type: string
-        startDate:
+        start_date:
           type: number
-        endDate:
+        end_date:
           type: number
         description:
           type: string
         status:
           type: number
-        gameName:
+        game_name:
           type: string
-        maxTeams:
+        max_teams:
           type: number
 
 tags:
@@ -1508,3 +1548,5 @@ tags:
     description: Team management
   - name: matches
     description: Match management
+  # - name: games
+  # description: Game management
