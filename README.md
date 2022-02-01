@@ -2,15 +2,17 @@
 
 Backend for woa tournament app
 
+## sample data passowrd :
+
+```
+82CFEkUXq3mY5i4
+```
+
 ## TODO :
-- comments
-- sample db data
-- clean unused code
+- trigger : can’t add beyond max_teams teams on tournaments 
 
-
-
-
-
+-   comments
+-   clean unused code
 
 -   get tournaments of team
 
