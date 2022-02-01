@@ -624,7 +624,7 @@ paths:
           $ref: "#/components/responses/403Forbidden"
         "500":
           $ref: "#/components/responses/500InternalServerError"
-  /teams/{id}/users/{userId}:
+  /teams/{id}/users/{userID}:
     put:
       summary: Add a player to a team
       description: Add a player to a team, the user must be admin or captain of the team
@@ -638,7 +638,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: userId
+        - name: userID
           in: path
           required: true
           schema:
@@ -681,7 +681,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: userId
+        - name: userID
           in: path
           required: true
           schema:
@@ -1220,7 +1220,7 @@ paths:
         "500":
           $ref: "#/components/responses/500InternalServerError"
 
-  /tournaments/{id}/teams/{team_id}:
+  /tournaments/{id}/teams/{teamID}:
     put:
       summary: Add a team in a tournament
       description: must be admin or organizer of the tournament
@@ -1234,7 +1234,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: team_id
+        - name: teamID
           in: path
           required: true
           schema:
@@ -1267,7 +1267,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: team_id
+        - name: teamID
           in: path
           required: true
           schema:
@@ -1300,7 +1300,7 @@ paths:
           required: true
           schema:
             type: number
-        - name: team_id
+        - name: teamID
           in: path
           required: true
           schema:
@@ -1496,9 +1496,9 @@ components:
       properties:
         id:
           type: number
-        team_1_id:
+        team1_id:
           type: number
-        team_2_id:
+        team2_id:
           type: number
         row:
           type: number
