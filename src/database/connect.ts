@@ -1,10 +1,9 @@
-import {
-    Pool,
-    ClientOptions,
-} from "https://deno.land/x/postgres@v0.14.3/mod.ts";
+import { Pool, ClientOptions } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
 export default function Connect(param: ClientOptions | string) {
-    return new Pool(param, 100, true);
+    const poolSize = parseInt(Deno.env.get("DB_POOL_SIZE") ?? "a", 10) || 100;
+
+    return new Pool(param, poolSize, true);
 }
 
 // connect to database with defaults/env vars

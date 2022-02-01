@@ -70,6 +70,7 @@ Needs to be linked to a postgreSQL database.
 -   DB_USERNAME : username to connect to the DB
 -   DB_PASSWORD : password to connect to the DB
 -   DB_DATABASE : name of the database to use
+-   DB_POOL_SIZE : number of connexions allowed in parallel to the db, 100 by default.
 
 ## technologies
 
