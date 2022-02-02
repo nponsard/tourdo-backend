@@ -10,6 +10,7 @@ Backend for woa tournament app
 
 ## TODO :
 - trigger : can’t add beyond max_teams teams on tournaments 
+- fix tournament generate bug
 
 -   comments
 -   clean unused code

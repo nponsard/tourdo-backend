@@ -68,8 +68,8 @@ function generateSimpleEliminationMatches(tournament: Tournament, teams: Tournam
             let team2_id = null;
 
             if (column == 0) {
-                team1_id = teams[i * 2].team.id;
-                team2_id = teams[i * 2 + 1].team.id;
+                team1_id = teams[i * 2] ? teams[i * 2].team.id : null;
+                team2_id = teams[i * 2 + 1] ? teams[i * 2 + 1].team.id : null;
             }
 
             matches.push({
