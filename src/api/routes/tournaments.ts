@@ -273,7 +273,7 @@ router.put("/:id/teams/:team_id", async (ctx) => {
 
     try {
         const team = await AddTournamentTeam(ctx.app.state.pool, tournament_id, team_id);
-        SendJSONResponse(ctx, team, 200);
+        SendJSONResponse(ctx, {message:"OK"}, 200);
     } catch (e) {
         console.log(e);
 
