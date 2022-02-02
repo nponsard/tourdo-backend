@@ -49,12 +49,12 @@ begin
 
         -- recalculate win counts
         select COALESCE(count(distinct (id)), 0)
-        into team1_total
+        into team1_wins
         from matches
         where (team1_id = t1_id and status = 1)
            or (team2_id = t1_id and status = 2);
         select COALESCE(count(distinct (id)), 0)
-        into team2_total
+        into team2_wins
         from matches
         where (team1_id = t2_id and status = 1)
            or (team2_id = t2_id and status = 2);

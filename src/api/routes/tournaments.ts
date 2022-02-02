@@ -272,7 +272,7 @@ router.put("/:id/teams/:team_id", async (ctx) => {
         return SendJSONResponse(ctx, { message: "Tournament already has max teams" }, 400);
 
     try {
-        const team = await AddTournamentTeam(ctx.app.state.pool, tournament_id, team_id);
+        const _team = await AddTournamentTeam(ctx.app.state.pool, tournament_id, team_id);
         SendJSONResponse(ctx, {message:"OK"}, 200);
     } catch (e) {
         console.log(e);
