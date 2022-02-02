@@ -31,7 +31,9 @@ export async function UpdateTournamentMatches(pool: Pool, match: Match) {
         let team1_id = upperMatch.team1_id;
         let team2_id = upperMatch.team2_id;
 
-        if (team1_id == null) team1_id = winnerId;
+        // the winner takes the position according to the row of the match
+
+        if (match.row % 2 == 0) team1_id = winnerId;
         else team2_id = winnerId;
 
         if (match.team1_id)
