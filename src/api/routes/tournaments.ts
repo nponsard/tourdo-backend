@@ -373,7 +373,7 @@ router.post("/:id/matches/generate", async (ctx) => {
         ctx.app.state.pool,
         tournament_id,
         tournament.type,
-        TournamentStatus.Generated,
+        TournamentStatus.Created, // don’t change status because you can’t control it from the UI
         tournament.name,
         tournament.description,
         tournament.start_date,

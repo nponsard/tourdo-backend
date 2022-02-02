@@ -131,7 +131,7 @@ export async function UpdateTournament(
 ): Promise<Tournament> {
     const client = await pool.connect();
     const result = await client.queryObject<Tournament>(
-        `UPDATE tournaments SET type = $1, name = $2, description = $3, start_date = $4, end_date = $5, max_teams = $6, game_name = $7 , status = $8, WHERE id = $9 RETURNING *`,
+        `UPDATE tournaments SET type = $1, name = $2, description = $3, start_date = $4, end_date = $5, max_teams = $6, game_name = $7 , status = $8 WHERE id = $9 RETURNING *`,
         type,
         name,
         description,
@@ -227,13 +227,13 @@ export async function GetTournamentMatchesWithTeamId(
 export async function AddTournamentTeam(
     pool: Pool,
     tournament_id: number,
-    team_id: number,
+    team_id: number
 ): Promise<void> {
     const client = await pool.connect();
     await client.queryObject(
         `INSERT INTO tournaments_participants(tournament_id, team_id) VALUES($1,$2)`,
         tournament_id,
-        team_id,
+        team_id
     );
 
     client.release();
