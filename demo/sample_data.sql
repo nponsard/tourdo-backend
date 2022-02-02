@@ -44,13 +44,13 @@ insert into tournaments_organizers (tournament_id, user_id) VALUES (1,1);
 
 truncate tournaments_participants cascade ;
 
-insert into tournaments_participants (team_id, team_number) values (1,1);
-insert into tournaments_participants (team_id, team_number) values (2,2);
-insert into tournaments_participants (team_id, team_number) values (3,3);
-insert into tournaments_participants (team_id, team_number) values (4,4);
-insert into tournaments_participants (team_id, team_number) values (5,5);
-insert into tournaments_participants (team_id, team_number) values (6,6);
-insert into tournaments_participants (team_id, team_number) values (7,7);
-insert into tournaments_participants (team_id, team_number) values (8,8);
+insert into tournaments_participants (tournament_id,team_id, team_number) values (1,1,1);
+insert into tournaments_participants (tournament_id,team_id, team_number) values (1,2,2);
+insert into tournaments_participants (tournament_id,team_id, team_number) values (1,3,3);
+insert into tournaments_participants (tournament_id,team_id, team_number) values (1,4,4);
+insert into tournaments_participants (tournament_id,team_id, team_number) values (1,5,5);
+insert into tournaments_participants (tournament_id,team_id, team_number) values (1,6,6);
+insert into tournaments_participants (tournament_id,team_id, team_number) values (1,7,7);
+insert into tournaments_participants (tournament_id,team_id, team_number) values (1,8,8);
 
 truncate matches cascade ;
