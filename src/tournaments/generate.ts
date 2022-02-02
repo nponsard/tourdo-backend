@@ -54,8 +54,8 @@ function generateSimpleEliminationMatches(tournament: Tournament, teams: Tournam
 
     let rounds = 1;
 
-    while (capacity <= teams.length) {
-        capacity *= 2;
+    while (capacity < teams.length) {
+        capacity*= 2;
         rounds++;
     }
 
