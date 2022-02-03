@@ -14,15 +14,18 @@ import {
 import { GetTournamentOrganizers } from "../../database/entities/tournaments.ts";
 import { UpdateTournamentMatches } from "../../tournaments/update.ts";
 
+/**
+ * 
+ * This router handles all requests to the /matches endpoint.
+ * 
+ */
 const router = new Router({ prefix: `${Prefix}/matches` });
 
 router.get("/:id", async (ctx) => {
     const match_id = parseInt(ctx.params.id, 10);
-
     if (isNaN(match_id)) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const match = await GetMatch(ctx.app.state.pool, match_id);
-
     if (!match) return SendJSONResponse(ctx, { message: "Match not found" }, 404);
 
     SendJSONResponse(ctx, match, 200);
@@ -30,22 +33,18 @@ router.get("/:id", async (ctx) => {
 
 router.patch("/:id", async (ctx) => {
     const match_id = parseInt(ctx.params.id, 10);
-
     if (isNaN(match_id)) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const user = await GetUserWithAccessToken(
         ctx.app.state.pool,
         ctx.request.headers.get("Authorization")
     );
-
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
     const match = await GetMatch(ctx.app.state.pool, match_id);
-
     if (!match) return SendJSONResponse(ctx, { message: "Match not found" }, 404);
 
     const organizers = await GetTournamentOrganizers(ctx.app.state.pool, match.tournament_id);
-
     if (!organizers.find((o) => o.id === user.id) && !user.admin)
         return SendJSONResponse(ctx, { message: "Forbidden" }, 403);
 
@@ -85,7 +84,6 @@ router.patch("/:id", async (ctx) => {
 
 router.delete("/:id", async (ctx) => {
     const match_id = parseInt(ctx.params.id, 10);
-
     if (isNaN(match_id)) return SendJSONResponse(ctx, { message: "Invalid ID" }, 400);
 
     const user = await GetUserWithAccessToken(
@@ -98,7 +96,6 @@ router.delete("/:id", async (ctx) => {
     if (!match) return SendJSONResponse(ctx, { message: "Match not found" }, 404);
 
     const organizers = await GetTournamentOrganizers(ctx.app.state.pool, match.tournament_id);
-
     if (!organizers.find((o) => o.id === user.id) && !user.admin)
         return SendJSONResponse(ctx, { message: "Forbidden" }, 403);
 
@@ -112,9 +109,8 @@ router.post("/", async (ctx) => {
         ctx.app.state.pool,
         ctx.request.headers.get("Authorization")
     );
-
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
-
+    
     const body = await ParseBodyJSON<{
         team1_id: number;
         team2_id: number;
@@ -126,7 +122,6 @@ router.post("/", async (ctx) => {
     }>(ctx);
 
     const organizers = await GetTournamentOrganizers(ctx.app.state.pool, body.tournament_id);
-
     if (!organizers.find((o) => o.id === user.id) && !user.admin)
         return SendJSONResponse(ctx, { message: "Forbidden for this tournament" }, 403);
 

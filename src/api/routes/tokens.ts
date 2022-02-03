@@ -11,6 +11,11 @@ import {
 import { DecodeJWT } from "../../jwt/signature.ts";
 import { NewTokenPair } from "../../jwt/tokens.ts";
 
+/**
+ *
+ * This router handles all requests to the /tokens endpoint.
+ *
+ */
 const router = new Router({ prefix: `${Prefix}/tokens` });
 
 router.post("/refresh", async (ctx) => {

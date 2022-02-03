@@ -21,6 +21,11 @@ import {
 } from "../../database/entities/teams.ts";
 import { getQuery } from "https://deno.land/x/oak@v10.1.0/helpers.ts";
 
+/**
+ * 
+ * This router handles all requests to the /teams endpoint.
+ * 
+ */
 const router = new Router({ prefix: `${Prefix}/teams` });
 
 router.post("/", async (ctx) => {

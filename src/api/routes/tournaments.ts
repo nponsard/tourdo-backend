@@ -30,6 +30,13 @@ import { ShuffleTournamentTeams } from "../../tournaments/shuffle.ts";
 import { GenerateMatches } from "../../tournaments/generate.ts";
 import { CreateMatch, MatchStatus } from "../../database/entities/matches.ts";
 
+
+
+/**
+ * 
+ * This router handles all requests to the /tournaments endpoint.
+ * 
+ */
 const router = new Router({ prefix: `${Prefix}/tournaments` });
 
 router.post("/", async (ctx) => {

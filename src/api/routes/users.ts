@@ -27,6 +27,12 @@ import { GetUserWithAccessToken } from "../../jwt/user.ts";
 import { getQuery } from "https://deno.land/x/oak@v10.1.0/helpers.ts";
 import { DecodeJWT } from "../../jwt/signature.ts";
 
+
+/**
+ * 
+ * This router handles all requests to the /users endpoint.
+ * 
+ */
 const router = new Router({ prefix: `${Prefix}/users` });
 
 router.post("/register", async (ctx) => {
