@@ -23,7 +23,7 @@ export const SendJSONResponse = <T>(
 export const Prefix = "/api/v1";
 
 /**
- * @description Parse the body from the JSON request
+ * Parse the body from the JSON request
  */
 export function ParseBodyJSON<T>(ctx: Context<Record<string, unknown>>): Promise<T> {
     return ctx.request.body({ type: "json" }).value.catch((err) => {
