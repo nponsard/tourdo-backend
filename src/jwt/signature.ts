@@ -1,5 +1,6 @@
 import { create, verify } from "https://deno.land/x/djwt@v2.4/mod.ts";
-//const defaultKey = `Wzc4LDE5NCwxNzUsMjQ0LDEzNywxMCwyMDcsMTk4LDcyLDYwLDUxLDIzNSwxNDgsMjAzLDI1MCwxMjEsNiwyMzYsODksMTQ1LDEwMiwyMjYsMTIsMjM3LDM3LDY5LDEwNCwxODEsMzQsMTI2LDI1MywyMDYsNDEsMTE1LDEzOCwxMTUsMTcyLDIzNSwxMjAsMjE4LDI1MiwyMjgsODIsNzMsNzMsMTc3LDE0LDEwNiw4NSw3OCwxMzIsMTA3LDEwOCw4NSwyNTMsMTgxLDE0MywyMjUsMzgsMCwxMDcsMjIxLDYsNTcsMjExLDIyMSwxMTYsMTU3LDQyLDM2LDc3LDExOSwxOTYsODIsNSwxNjAsMTY0LDE2OCwyMTEsNTMsNSwyMzgsMCwxMzAsMTEyLDEzMCwzMSwxNDYsMTg3LDIwNiwxMzEsMjQ5LDE3OCwxMTksMTI2LDc1LDIxMSwxNDcsMTYwLDc2LDE1MiwxNDUsMTE0LDM4LDExNSwyNiwxMzQsNzIsMjUsMjQ4LDEyNSwyMDEsMjAsNTEsMjYsMTEyLDk5LDExNCwxMTksMzYsMjM2LDc0LDgzLDc0LDI5LDcyLDIyMyw2Nl0=`;
+
+// Parse the JWT_KEY at the start (used to sign and verify tokens)
 
 const secret = Deno.env.get("JWT_KEY");
 
@@ -7,10 +8,6 @@ if (!secret || secret.length < 10) {
     console.error("JWT_KEY not set");
     Deno.exit(1);
 }
-
-// import keys
-
-// let ecPublickey: KeyLike | Uint8Array;
 let key: CryptoKey;
 try {
     const json = JSON.parse(atob(secret));
@@ -20,16 +17,20 @@ try {
         "sign",
         "verify",
     ]);
-    // ecPrivatekey = await importJWK(json.exportedPrivate);
 } catch (e) {
-    console.error("Can’t import JWK", e);
+    console.error("Can’t import JWT_KEY : ", e);
     Deno.exit(1);
 }
-
+/**
+ * Generate a new JWT signed with the HMAC key
+ */
 export function SignToken(id: number, token: string, expirationTime: number) {
     return create({ alg: "HS512", typ: "jwt" }, { id, token, exp: expirationTime }, key);
 }
 
+/**
+ * Decode the JWT and verify it with the HMAC key, an error is thrown if the token is invalid
+ */
 export function DecodeJWT(jwt: string) {
     return verify(jwt, key) as Promise<{
         id: number;

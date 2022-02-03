@@ -6,6 +6,8 @@ import RegisterRoutes from "./routes.ts";
  * @description Starts the http server, https should be handled by a reverse proxy.
  */
 export default async function Start(pool: Pool) {
+    // pass the database connection pool to the application
+
     const app = new Application({ state: { pool } });
 
     // middleware to handle CORS

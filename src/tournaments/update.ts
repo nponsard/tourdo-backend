@@ -7,6 +7,11 @@ import {
 } from "../database/entities/matches.ts";
 import { GetTournament, TournamentType } from "../database/entities/tournaments.ts";
 
+
+
+/**
+ * This function updates the upper match in a Single Elimination tournament.
+ */
 export async function UpdateTournamentMatches(pool: Pool, match: Match) {
     if (
         match.status != MatchStatus.Team1Won &&

@@ -1,6 +1,9 @@
 import { Team } from "../database/entities/teams.ts";
 import { Tournament, TournamentTeam, TournamentType } from "../database/entities/tournaments.ts";
 
+/**
+ * This functions generates the matches for a tournament. If the tournament type is unsupported the function returns ```{ capacity: tournament.max_teams, matches: [] }```
+ */
 export function GenerateMatches(
     tournament: Tournament,
     teams: { team: Team; team_number: number }[]
@@ -11,10 +14,15 @@ export function GenerateMatches(
         case TournamentType.SimpleElimination:
             return generateSimpleEliminationMatches(tournament, teams);
         default:
-            throw new Error("Unknown tournament type");
+            return { capacity: tournament.max_teams, matches: [] };
     }
 }
-
+/**
+ * Generate matches for a round robin tournament :
+ *
+ * Each team should play against every other team.
+ *
+ */
 function generateRoundRobinMatches(tournament: Tournament, teams: TournamentTeam[]) {
     const matches = [];
 
@@ -39,9 +47,9 @@ function generateRoundRobinMatches(tournament: Tournament, teams: TournamentTeam
 /**
  * Generate matches for a simple elimination tournament
  *
- * First get the power of 2 the upper nearest of the number of teams
+ * First get the power of 2 the upper nearest of the number of teams -> capacity.
  * Then generate the first column of matches with the teams
- * Then generate the other columns with no teams, each new column having half of the matches of the previous one.
+ * Then generate the other columns with no teams, each new column having half of the matches of the previous one, updating the row and column.
  *
  *
  */
@@ -55,7 +63,7 @@ function generateSimpleEliminationMatches(tournament: Tournament, teams: Tournam
     let rounds = 1;
 
     while (capacity < teams.length) {
-        capacity*= 2;
+        capacity *= 2;
         rounds++;
     }
 

@@ -1,5 +1,8 @@
 import { Team } from "../database/entities/teams.ts";
 
+
+
+// Shuffle the teams in a tournament.
 export function ShuffleTournamentTeams(
     teams: { team: Team }[]
 ): { team_id: number; team_number: number }[] {

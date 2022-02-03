@@ -1,12 +1,14 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
+/**
+ * Databsae initialisiation using the sql files in the database_scripts folder
+ */
 export default async function Init(pool: Pool) {
     console.log("Initializing database...");
 
     const start = Date.now();
 
     const client = await pool.connect();
-
     const scripts = [];
 
     // fetch base scripts
@@ -19,10 +21,10 @@ export default async function Init(pool: Pool) {
         }
     }
 
-    // sort scripts
+    // sort scripts by name
 
     scripts.sort((a, b) => {
-        return a.name.localeCompare(b.name, 'en');
+        return a.name.localeCompare(b.name, "en");
     });
 
     // execute scripts

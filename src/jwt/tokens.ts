@@ -1,5 +1,6 @@
 import { SignToken } from "./signature.ts";
 
+// Create a new access token and a new refresh token
 export async function NewTokenPair(userId: number) {
     const accessToken = crypto.randomUUID();
     const refreshToken = crypto.randomUUID();
