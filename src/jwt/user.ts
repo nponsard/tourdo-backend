@@ -3,6 +3,9 @@ import { GetTokensWithAccessToken } from "../database/entities/token.ts";
 import { GetUser } from "../database/entities/user.ts";
 import { DecodeJWT } from "./signature.ts";
 
+
+
+// Get the user corresponding to the access token, null if not found
 export async function GetUserWithAccessToken(pool: Pool, accessJWT: string | null) {
     if (!accessJWT) return null;
 

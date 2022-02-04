@@ -1,5 +1,9 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/pool.ts";
 
+
+/**
+ * This file contains all the database functions concerning the matches
+ */
 export interface Match {
     id: number;
     team1_id: number;

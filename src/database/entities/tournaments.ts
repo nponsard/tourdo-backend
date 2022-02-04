@@ -3,6 +3,11 @@ import { Match } from "./matches.ts";
 import { Team } from "./teams.ts";
 import { User } from "./user.ts";
 
+
+/**
+ * This file contains all the database functions concerning the tournaments
+ */
+
 export enum TournamentType {
     None = 0,
     RoundRobin = 1,

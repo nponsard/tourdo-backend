@@ -1,6 +1,9 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 import { Team } from "./teams.ts";
 
+/**
+ * This file contains all the database functions concerning the users
+ */
 export interface UserAuth {
     id: number;
     username: string;
@@ -103,7 +106,6 @@ export async function UpdateUser(
     return result.rowCount != undefined && result.rowCount >= 1;
 }
 
-//TODO : delete all info related to this user
 export async function DeleteUser(db: Pool, userID: number): Promise<boolean> {
     const client = await db.connect();
     const _result = await client.queryObject("DELETE FROM users WHERE id = $1", userID);

@@ -1,5 +1,9 @@
 import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 
+
+/**
+ * This file contains all the database functions concerning the tokens
+ */
 export interface Token {
     id: number;
     user_id: number;

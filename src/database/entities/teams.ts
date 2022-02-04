@@ -2,6 +2,9 @@ import { Pool } from "https://deno.land/x/postgres@v0.14.3/mod.ts";
 import { Tournament } from "./tournaments.ts";
 import { User } from "./user.ts";
 
+/**
+ * This file contains all the database functions concerning the teams
+ */
 export enum Role {
     PLAYER = 0,
     LEADER = 1,
