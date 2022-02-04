@@ -36,7 +36,7 @@ You can also use the docker-compose.yml file while developing.
 The bodies sent to and recieved from the api is using snake_case naming to keep compatiblity with the database
 
 
-## sample data passowrd (all users) :
+## Password for all users in the sample data :
 
 ```
 82CFEkUXq3mY5i4
