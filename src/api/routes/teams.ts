@@ -22,9 +22,9 @@ import {
 import { getQuery } from "https://deno.land/x/oak@v10.1.0/helpers.ts";
 
 /**
- * 
+ *
  * This router handles all requests to the /teams endpoint.
- * 
+ *
  */
 const router = new Router({ prefix: `${Prefix}/teams` });
 
@@ -36,14 +36,20 @@ router.post("/", async (ctx) => {
 
     if (!user) return SendJSONResponse(ctx, { message: "Unauthorized" }, 401);
 
-    const body = await ParseBodyJSON<{ name: string; description: string }>(ctx);
+    const body = await ParseBodyJSON<{ name: string; description: string; empty?: boolean }>(ctx);
 
     const exists = await GetTeamByName(ctx.app.state.pool, body.name);
 
     if (exists && exists.name === body.name)
         return SendJSONResponse(ctx, { message: "Team already exists" }, 409);
 
-    const team = await CreateTeam(ctx.app.state.pool, body.name, body.description, user.id);
+    if (body.empty) {
+        if (!user.admin) return SendJSONResponse(ctx, { message: "Requires admin rights" }, 401);
+    }
+
+    const userId = body.empty ? undefined : user.id;
+
+    const team = await CreateTeam(ctx.app.state.pool, body.name, body.description, userId);
 
     SendJSONResponse(ctx, team, 201);
 });
@@ -237,8 +243,6 @@ router.get("/:id/tournaments", async (ctx) => {
     const tournaments = await GetTournamentsOfTeam(ctx.app.state.pool, team_id);
 
     return SendJSONResponse(ctx, tournaments, 200);
-
-})
-
+});
 
 export { router as Teams };
