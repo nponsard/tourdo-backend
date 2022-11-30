@@ -33,7 +33,7 @@ export async function GetTeam(db: Pool, id: number): Promise<Team> {
     return result.rows[0] as Team;
 }
 
-export async function CreateTeam(db: Pool, name: string, description: string, userID: number) {
+export async function CreateTeam(db: Pool, name: string, description: string, userID?: number) {
     const client = await db.connect();
     const transaction = client.createTransaction("team_transaction");
 
@@ -44,12 +44,14 @@ export async function CreateTeam(db: Pool, name: string, description: string, us
         description
     );
 
-    await transaction.queryObject(
-        "INSERT INTO teams_composition (team_id, user_id, role) VALUES ($1, $2, $3)",
-        team.rows[0].id,
-        userID,
-        Role.LEADER
-    );
+    if (userID) {
+        await transaction.queryObject(
+            "INSERT INTO teams_composition (team_id, user_id, role) VALUES ($1, $2, $3)",
+            team.rows[0].id,
+            userID,
+            Role.LEADER
+        );
+    }
 
     await transaction.commit();
     client.release();

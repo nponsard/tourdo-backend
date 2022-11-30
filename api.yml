@@ -440,6 +440,10 @@ paths:
                   type: string
                 description:
                   type: string
+                empty:
+                  type: boolean
+                  nullable: true
+                  description: set to true to not be added to the team, for admins only
       responses:
         "201":
           description: Team created
